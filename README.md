@@ -1,1 +1,1 @@
-# SBOM-Generation-Reference-Implementations
+# SBOM-Generation
