@@ -4,6 +4,12 @@
 
 Creating high-quality Software Bills of Materials (SBOMs) is crucial for software transparency and security. However, the current landscape lacks a "golden path" for consistent SBOM generation. This project aims to bridge that gap by providing reference implementations.
 
+## Meeting
+
+Tuesdays @ 10am Eastern / 7am Pacific
+
+- [Teams Meeting Link](https://gov.teams.microsoft.us/l/meetup-join/19%3agcch%3ameeting_1fa6f7bb9186450fa64a2f0c0c497131%40thread.v2/0?context=%7b%22Tid%22%3a%22b18f006c-b0fc-467d-b23a-a35b5695b5dc%22%2c%22Oid%22%3a%226bb34de0-3fc5-496b-bf75-8faac6ae6e1a%22%7d)
+
 ## Goals
 
 This project will create example pipelines/workflows in GitHub and GitLab demonstrating how to generate quality SBOMs for various software types:
@@ -18,7 +24,7 @@ This project will create example pipelines/workflows in GitHub and GitLab demons
 - Go Application
 - Container Image with Go application
 
-~Stretch Goal~: Workflows for creating SBOMs with multiple dependency trees (SBOM nesting)
+__Stretch Goal__: Workflows for creating SBOMs with multiple dependency trees (SBOM nesting)
 
 ### Phase 3
 
