@@ -1,0 +1,44 @@
+name: Phase 1 - Python
+on: [push]
+jobs:
+  Container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # We're using native docker build here rather
+      # than 'docker/build-push-action' to make the run
+      # more pipeline agnostic.
+      - name: Build Docker image
+        working-directory: "Phase 1/Python"
+        run: |
+          docker build -t phase_1_python .
+
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | \
+            sh -s -- -b /usr/local/bin
+
+      - name: Generate SBOM with Syft
+        run: |
+          syft phase_1_python \
+            -o cyclonedx-json > container-sbom_cyclonedx.json
+
+          syft phase_1_python }} \
+            -o spdx-json > container-sbom_spdx.json
+
+  Application:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Should probably pin this dependency
+      - name: "CycloneDX: Install Dependency"
+        working-directory: "Phase 1/Python"
+        run: |
+          python -m pip install cyclonedx-bom
+
+      - name: "CycloneDX: Generate SBOM"
+        working-directory: "Phase 1/Python"
+        run: |
+          cyclonedx-py requirements requirements.txt > application-sbom_cyclonedx.json
