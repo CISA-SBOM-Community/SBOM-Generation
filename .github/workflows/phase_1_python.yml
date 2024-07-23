@@ -88,7 +88,7 @@ jobs:
           sbommerge \
             --format json \
             --sbom cyclonedx \
-            -output-file flattened-cyclonedx.json \
+            --output-file flattened-cyclonedx.json \
             container-sbom_cyclonedx.json \
             application-sbom_cyclonedx.json
 
