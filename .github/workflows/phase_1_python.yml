@@ -81,6 +81,10 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
 
+      - name: "Debug"
+        run: |
+          find .
+
       - name: "CycloneDX: Generate Merged SBOM"
         run: |
           sbommerge \
