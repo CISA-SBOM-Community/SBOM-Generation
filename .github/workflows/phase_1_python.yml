@@ -72,7 +72,7 @@ jobs:
       # TODO: Merge SBOMS
 
   Validate:
-    needs: Validate
+    needs: Assemble
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
