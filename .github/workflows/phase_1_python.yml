@@ -75,7 +75,6 @@ jobs:
 
       # Should probably pin this dependency
       - name: "Install sbommerge"
-        working-directory: "Phase 1/Python"
         run: |
           python -m pip install sbommerge
 
@@ -83,7 +82,6 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: "CycloneDX: Generate Merged SBOM"
-        working-directory: "Phase 1/Python"
         run: |
           sbommerge \
             --format json \
@@ -96,7 +94,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: application-sbom-cyclonedx
-          path: "Phase 1/Python/flattened-cyclonedx.json"
+          path: "flattened-cyclonedx.json"
 
   Validate:
     needs: Assemble
