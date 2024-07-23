@@ -17,7 +17,7 @@ This project will create example pipelines/workflows in GitHub and GitLab demons
 ### Phase 1
 
 - Java Application
-- Python (DJango) Container Image
+- Container Image with Python (Django) application
 
 ### Phase 2
 
