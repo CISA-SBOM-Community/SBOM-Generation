@@ -22,6 +22,7 @@ jobs:
             sh -s -- -b /usr/local/bin
 
       - name: Generate SBOM with Syft
+        working-directory: "Phase 1/Python"
         run: |
           syft phase_1_python \
             -o cyclonedx-json > container-sbom_cyclonedx.json
@@ -39,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: container-sbom-spdx
-          path: container-sbom-spdx.json
+          path: container-sbom_spdx.json
 
   Application:
     runs-on: ubuntu-latest
@@ -57,6 +58,12 @@ jobs:
         run: |
           cyclonedx-py requirements requirements.txt \
             > application-sbom_cyclonedx.json
+
+      - name: Upload CycloneDX SBOM
+        uses: actions/upload-artifact@v3
+        with:
+          name: application-sbom-cyclonedx
+          path: application-sbom_cyclonedx.json
 
       # TODO: Add SPDX Generation
 
