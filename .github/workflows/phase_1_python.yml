@@ -24,7 +24,7 @@ jobs:
           syft phase_1_python \
             -o cyclonedx-json > container-sbom_cyclonedx.json
 
-          syft phase_1_python }} \
+          syft phase_1_python \
             -o spdx-json > container-sbom_spdx.json
 
   Application:
