@@ -34,13 +34,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: container-sbom-cyclonedx
-          path: container-sbom_cyclonedx.json
+          path: "Phase 1/Python/container-sbom_cyclonedx.json"
 
       - name: Upload SPDX SBOM
         uses: actions/upload-artifact@v3
         with:
           name: container-sbom-spdx
-          path: container-sbom_spdx.json
+          path: "Phase 1/Python/container-sbom_spdx.json"
 
   Application:
     runs-on: ubuntu-latest
@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: application-sbom-cyclonedx
-          path: application-sbom_cyclonedx.json
+          path: "Phase 1/Python/application-sbom_cyclonedx.json"
 
       # TODO: Add SPDX Generation
 
