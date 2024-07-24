@@ -97,7 +97,7 @@ jobs:
       - name: Upload Combined CycloneDX SBOM
         uses: actions/upload-artifact@v4
         with:
-          name: application-sbom-cyclonedx
+          name: flatten-sbom-cyclonedx
           path: "/tmp/flattened-cyclonedx.json"
 
   Validate:
