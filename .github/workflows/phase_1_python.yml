@@ -91,7 +91,7 @@ jobs:
             --format json \
             --sbom cyclonedx \
             --output-file /tmp/flattened-cyclonedx.json \
-            container-sbom-spdx/container-sbom_spdx.json \
+            container-sbom-cyclonedx/container-sbom_cyclonedx.json \
             application-sbom-cyclonedx/application-sbom_cyclonedx.json
 
       - name: Upload Combined CycloneDX SBOM
