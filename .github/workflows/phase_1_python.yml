@@ -90,15 +90,15 @@ jobs:
           sbommerge \
             --format json \
             --sbom cyclonedx \
-            --output-file flattened-cyclonedx.json \
-            container-sbom_cyclonedx.json \
-            application-sbom_cyclonedx.json
+            --output-file /tmp/flattened-cyclonedx.json \
+            container-sbom-spdx/container-sbom_spdx.json \
+            application-sbom-cyclonedx/application-sbom_cyclonedx.json
 
       - name: Upload Combined CycloneDX SBOM
         uses: actions/upload-artifact@v4
         with:
           name: application-sbom-cyclonedx
-          path: "flattened-cyclonedx.json"
+          path: "/tmp/flattened-cyclonedx.json"
 
   Validate:
     needs: Assemble
