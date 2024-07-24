@@ -9,6 +9,7 @@ reach out using issues. If you have other questions about this project, please s
 Maintainers (in alphabetical order)
 
 * @idunbarh
+* @vpetersson
 
 Emeritus Maintainers (in alphabetical order)
 

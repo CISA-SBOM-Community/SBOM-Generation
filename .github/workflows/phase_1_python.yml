@@ -25,22 +25,22 @@ jobs:
         working-directory: "Phase 1/Python"
         run: |
           syft phase_1_python \
-            -o cyclonedx-json > container-sbom_cyclonedx.json
+            -o cyclonedx-json > /tmp/container-sbom_cyclonedx.json
 
           syft phase_1_python \
-            -o spdx-json > container-sbom_spdx.json
+            -o spdx-json > /tmp/container-sbom_spdx.json
 
       - name: Upload CycloneDX SBOM
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: container-sbom-cyclonedx
-          path: "Phase 1/Python/container-sbom_cyclonedx.json"
+          path: "/tmp/container-sbom_cyclonedx.json"
 
       - name: Upload SPDX SBOM
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: container-sbom-spdx
-          path: "Phase 1/Python/container-sbom_spdx.json"
+          path: "/tmp/container-sbom_spdx.json"
 
   Application:
     runs-on: ubuntu-latest
@@ -57,13 +57,13 @@ jobs:
         working-directory: "Phase 1/Python"
         run: |
           cyclonedx-py requirements requirements.txt \
-            > application-sbom_cyclonedx.json
+            > /tmp/application-sbom_cyclonedx.json
 
       - name: Upload CycloneDX SBOM
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: application-sbom-cyclonedx
-          path: "Phase 1/Python/application-sbom_cyclonedx.json"
+          path: "/tmp/application-sbom_cyclonedx.json"
 
       # TODO: Add SPDX Generation
 
@@ -81,9 +81,9 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
 
-      - name: "Debug"
+      - name: "Debug: SBOMs"
         run: |
-          find .
+          find . -iname *.json
 
       - name: "CycloneDX: Generate Merged SBOM"
         run: |
@@ -95,7 +95,7 @@ jobs:
             application-sbom_cyclonedx.json
 
       - name: Upload Combined CycloneDX SBOM
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: application-sbom-cyclonedx
           path: "flattened-cyclonedx.json"
