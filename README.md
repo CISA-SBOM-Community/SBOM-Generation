@@ -14,6 +14,13 @@ Tuesdays @ 10am Eastern / 7am Pacific
 
 This project will create example pipelines/workflows in GitHub and GitLab demonstrating how to generate quality SBOMs for various software types:
 
+### SBOM Type
+
+This activity only covers [SBOMs of Type Source or Build](https://www.cisa.gov/sites/default/files/2023-04/sbom-types-document-508c.pdf) as SBOMs of other types are typically not curated by the maintainers of Open Source software but instead by consumers of Open Source software. For Source and Build SBOMs, the contents of the SBOM describing the artifact will only include what is being distributed and will not contain information about prospective uses of the software during or after installation or running of the software. That information is captured in separate SBOM types (ie Deployment, Runtime).
+
+> In the context of this document, the “source” is defined as a snapshot of the source code made available to download, such as in a tgz archive.
+> The “build” is the artifacts that are built by the project and released. These could be tgz archives, but also other artifacts such as rpm, deb, or zip.
+
 ### Phase 1
 
 - Java Application
