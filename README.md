@@ -47,6 +47,8 @@ The project will be considered "done" when:
 - Workflows in these projects create SBOMs that:
   - Meet and exceed NTIA Minimum Elements.
   - Align with relevant Community Tiger Team whitepapers.
+    - [SBOM Sharing Primer](https://www.cisa.gov/sites/default/files/2024-05/SBOM%20Sharing%20Primer.pdf)
+    - [Framing Software Component Transparency Third Edition (DRAFT)](https://docs.google.com/document/d/1uddfhPqflTOeYK7ZJjS4gGa8pspwez6mhJUjTrvu4J4/edit?usp=sharing)
   - Are stored following OpenSSF guidance (including examples for importing into tools like DependencyTrack).
 - A white paper documents:
   - Hurdles encountered during development.
