@@ -24,7 +24,7 @@ This activity only covers [SBOMs of Type Source or Build](https://www.cisa.gov/s
 ### Phase 1
 
 - Java Application
-- Python Container Image
+- Container Image with Python application
 
 ### Phase 2
 
