@@ -82,12 +82,27 @@ The project will be considered "done" when:
 - Tool deployments requiring maintenance or cost.
 - SBOM signing (future Tiger Team initiative).
 
-## Timeline & Contribution
+## Timeline
 
-This project has an estimated end date of [Target End Date]. We welcome contributions from individuals with:
+This project has an estimated end date of __January 14, 2025__, and has several intermediate due dates for each phase.
+
+- Phase 1 (duration 6 weeks)
+  - Expected completion __September 10, 2024__
+- Phase 2 (duration 6 weeks)
+  - Expected completion __October 22, 2024__
+- Phase 3 (duration 6 weeks)
+  - Expected completion __December 3, 2024__
+- White Paper Completion (duration 6 weeks)
+  - Expected completion __January 14, 2025__
+
+## Contribution
+
+We welcome contributions from anyone in the community and especially individuals with:
 
 - DevSecOps experience (GitLab & GitHub platforms).
 - Open-source project experience (asynchronous collaboration).
+
+Please read the [Contribution Guidance](CONTRIBUTING.md).
 
 ## Join the Effort
 
