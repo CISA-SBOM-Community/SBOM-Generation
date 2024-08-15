@@ -1,0 +1,119 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "comment": "This document has been automatically generated.",
+    "creators": [
+      "Tool: sbom4python-0.11.0"
+    ],
+    "created": "2024-08-05T17:11:15Z",
+    "licenseListVersion": "3.22"
+  },
+  "name": "NOT_DEFINED",
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "http://spdx.org/spdxdocs/NOT_DEFINED-64b97389-9b3b-469f-bfb8-5123bd5ef4d6",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-1-asgiref",
+      "name": "asgiref",
+      "versionInfo": "3.8.1",
+      "primaryPackagePurpose": "APPLICATION",
+      "supplier": "Person: Django",
+      "downloadLocation": "https://pypi.org/project/asgiref/3.8.1",
+      "filesAnalyzed": false,
+      "homepage": "https://github.com/django/asgiref/",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checkumValue": "e38d3c327c01aa82c0bf2726220700c1097ea6cc"
+        }
+      ],
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "summary": "ASGI specs, helper code, and adapters",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/asgiref@3.8.1"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:django:asgiref:3.8.1:*:*:*:*:*:*:*"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-2-Django",
+      "name": "Django",
+      "versionInfo": "5.0.7",
+      "primaryPackagePurpose": "APPLICATION",
+      "supplier": "Person: Django",
+      "downloadLocation": "https://pypi.org/project/Django/5.0.7",
+      "filesAnalyzed": false,
+      "homepage": "https://www.djangoproject.com/",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "summary": "A high-level Python web framework that encourages rapid development and clean, pragmatic design.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/Django@5.0.7"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:django:Django:5.0.7:*:*:*:*:*:*:*"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-3-sqlparse",
+      "name": "sqlparse",
+      "versionInfo": "0.5.1",
+      "primaryPackagePurpose": "APPLICATION",
+      "supplier": "Person: Andi Albrecht",
+      "downloadLocation": "https://pypi.org/project/sqlparse/0.5.1",
+      "filesAnalyzed": false,
+      "homepage": "https://github.com/andialbrecht/sqlparse",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "NOASSERTION",
+      "licenseComments": "sqlparse declares BSD License which is not currently a valid SPDX License identifier or expression.",
+      "copyrightText": "NOASSERTION",
+      "summary": "A non-validating SQL parser.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE_MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/sqlparse@0.5.1"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:andi_albrecht:sqlparse:0.5.1:*:*:*:*:*:*:*"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-1-asgiref",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-2-Django",
+      "relationshipType": "DESCRIBES"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-Package-3-sqlparse",
+      "relationshipType": "DESCRIBES"
+    }
+  ]
+}
