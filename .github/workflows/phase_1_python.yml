@@ -1,6 +1,10 @@
 ---
 name: Phase 1 - Python
 on: [push]
+
+env:
+  TRIVY_VERSION: 0.18.3
+
 jobs:
   Container:
     runs-on: ubuntu-latest
@@ -15,20 +19,24 @@ jobs:
         run: |
           docker build -t phase_1_python .
 
-      # This should probably be pinned and verified
-      - name: Install Syft
+      - name: Install Trivy
         run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | \
-            sh -s -- -b /usr/local/bin
+          curl -o /tmp/trivy.tgz "https://github.com/aquasecurity/trivy/releases/download/v$TRIVY_VERSION/trivy_$TRIVY_VERSION_Linux-64bit.tar.gz"
+          tar xvf /tmp/trivy.tgz -C /tmp
+          chmod +x /tmp/trivy
 
-      - name: Generate SBOM with Syft
+      - name: Generate SBOM with Trivy
         working-directory: "Phase 1/Python"
         run: |
-          syft phase_1_python \
-            -o cyclonedx-json > /tmp/container-sbom_cyclonedx.json
+          trivy image \
+            --format cyclonedx \
+            --output /tmp/container-sbom_cyclonedx.json \
+            phase-1-python
 
-          syft phase_1_python \
-            -o spdx-json > /tmp/container-sbom_spdx.json
+          trivy image \
+            --format spdx-json \
+            --output /tmp/container-sbom_spdx.json \
+            phase-1-python
 
       - name: Upload CycloneDX SBOM
         uses: actions/upload-artifact@v4
@@ -52,26 +60,28 @@ jobs:
         working-directory: "Phase 1/Python"
         run: |
           python -m pip install cyclonedx-bom
-          #
-      # This should probably be pinned and verified
-      - name: Install Syft
+
+      - name: Install Trivy
         run: |
-          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | \
-            sh -s -- -b /usr/local/bin
+          curl -o /tmp/trivy.tgz "https://github.com/aquasecurity/trivy/releases/download/v$TRIVY_VERSION/trivy_$TRIVY_VERSION_Linux-64bit.tar.gz"
+          tar xvf /tmp/trivy.tgz -C /tmp
+          chmod +x /tmp/trivy
 
       - name: "CycloneDX: Generate SBOM"
         working-directory: "Phase 1/Python"
         run: |
-          cyclonedx-py requirements requirements.txt \
-            > /tmp/application-sbom_cyclonedx.json
-
+          trivy fs \
+            --format cyclonedx \
+            --output /tmp/application-sbom_cyclonedx.json \
+            requirements.txt
 
       - name: "SPDX: Generate SBOM"
         working-directory: "Phase 1/Python"
         run: |
-          syft requirements.txt \
-            -o spdx-json > \
-            /tmp/application-sbom_spdx.json
+          trivy fs \
+            --format spdx-json \
+            --output /tmp/application-sbom_spdx.json \
+            requirements.txt
 
       - name: Upload CycloneDX SBOM
         uses: actions/upload-artifact@v4
