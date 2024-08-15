@@ -17,7 +17,7 @@ jobs:
       - name: Build Docker image
         working-directory: "Phase 1/Python"
         run: |
-          docker build -t phase_1_python .
+          docker build -t phase-1-python .
 
       - name: Install Trivy
         run: |
