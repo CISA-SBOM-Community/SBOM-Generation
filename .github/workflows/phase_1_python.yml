@@ -117,7 +117,7 @@ jobs:
 
       - name: "Merge Debugging"
         run: |
-          echo "Output file: /tmp/flattened-cyclonedx.json
+          echo "Output file: /tmp/flattened-cyclonedx.json"
           echo "Input files: container-sbom-cyclonedx/container-sbom_cyclonedx.json application-sbom-cyclonedx/application-sbom_cyclonedx.json"
 
           touch /tmp/flattened-cyclonedx.json
