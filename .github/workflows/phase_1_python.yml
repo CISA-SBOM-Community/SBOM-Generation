@@ -3,7 +3,7 @@ name: Phase 1 - Python
 on: [push]
 
 env:
-  TRIVY_VERSION: 0.18.3
+  TRIVY_VERSION: 0.54.1
 
 jobs:
   Container:
