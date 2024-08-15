@@ -21,7 +21,8 @@ jobs:
 
       - name: Install Trivy
         run: |
-          curl -o /tmp/trivy.tgz "https://github.com/aquasecurity/trivy/releases/download/v$TRIVY_VERSION/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          curl -L -o /tmp/trivy.tgz \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
           tar xvf /tmp/trivy.tgz -C /tmp
           chmod +x /tmp/trivy
 
@@ -63,7 +64,8 @@ jobs:
 
       - name: Install Trivy
         run: |
-          curl -o /tmp/trivy.tgz "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          curl -L -o /tmp/trivy.tgz \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
           tar xvf /tmp/trivy.tgz -C /tmp
           chmod +x /tmp/trivy
 
