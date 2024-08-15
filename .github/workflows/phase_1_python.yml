@@ -4,6 +4,7 @@ on: [push]
 
 env:
   TRIVY_VERSION: 0.54.1
+  SBOMASM_VERSION: 0.1.4
 
 jobs:
   Container:
@@ -103,6 +104,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install sbomasm
+        run: |
+          curl -L -o /tmp/sbomasm \
+            "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
+          chmod +x /tmp/sbomasm
+
       # Should probably pin this dependency
       - name: "Install sbommerge"
         run: |
@@ -111,11 +118,9 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
 
-      - name: "Debug: SBOMs"
-        run: |
-          find . -iname *.json
-
+      # We need `continue-on-error: true` here as we sometimes get a non-exit 0
       - name: "CycloneDX: Generate Merged SBOM"
+        continue-on-error: true
         run: |
           sbommerge \
             --format json \
