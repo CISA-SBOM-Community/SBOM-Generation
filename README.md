@@ -9,6 +9,7 @@ Creating high-quality Software Bills of Materials (SBOMs) is crucial for softwar
 Tuesdays @ 10am Eastern / 7am Pacific
 
 - [Teams Meeting Link](https://gov.teams.microsoft.us/l/meetup-join/19%3agcch%3ameeting_1fa6f7bb9186450fa64a2f0c0c497131%40thread.v2/0?context=%7b%22Tid%22%3a%22b18f006c-b0fc-467d-b23a-a35b5695b5dc%22%2c%22Oid%22%3a%226bb34de0-3fc5-496b-bf75-8faac6ae6e1a%22%7d)
+- [Meeting Notes](https://docs.google.com/document/d/1ZWDFWVd5XStE2iOX041Q-uB0VdHXUnIB0YyAnIRSs5s/edit)
 
 ## Goals
 
