@@ -58,12 +58,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Should probably pin this dependency
-      - name: "CycloneDX: Install Dependency"
-        working-directory: "Phase 1/Python"
-        run: |
-          python -m pip install cyclonedx-bom
-
       - name: Install Trivy
         run: |
           curl -L -o /tmp/trivy.tgz \
@@ -118,6 +112,8 @@ jobs:
 
       - name: Enrich Container CycloneDX
         run: |
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables
           export SBOM_NAME='phase1-python-container'
           cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
             envsubst > metadata.cdx.json
@@ -131,6 +127,8 @@ jobs:
 
       - name: Enrich Application CycloneDX
         run: |
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables
           export SBOM_NAME='phase1-python-application'
           cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
             envsubst > metadata.cdx.json
@@ -141,6 +139,36 @@ jobs:
             application-sbom-cyclonedx/application-sbom_cyclonedx.json \
             metadata.cdx.json \
             > /tmp/enriched_application-sbom_cyclonedx.json
+
+      - name: Enrich Container SPDX
+        run: |
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables
+          export SBOM_NAME='phase1-python-container'
+          cat "Phase 1/Python/sbom/metadata.spdx.json.tmpl" | jq | \
+            envsubst > metadata.spdx.json
+          unset SBOM_NAME
+
+          # Merge together SBOM and metadata
+          jq --slurp '.[0] * .[1]' \
+            container-sbom-spdx/container-sbom_spdx.json \
+            metadata.cdx.json \
+            > /tmp/enriched_container-sbom_spdx.json
+
+      - name: Enrich Application CycloneDX
+        run: |
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables
+          export SBOM_NAME='phase1-python-application'
+          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
+            envsubst > metadata.cdx.json
+          unset SBOM_NAME
+
+          # Merge together SBOM and metadata
+          jq --slurp '.[0] * .[1]' \
+            application-sbom-spdx/application-sbom_spdx.json \
+            metadata.cdx.json \
+            > /tmp/enriched_application-sbom_spdx.json
 
       - name: Upload CycloneDX SBOM
         uses: actions/upload-artifact@v4
@@ -169,10 +197,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download flattened Cyclone DX artifact
+      - name: Download SBOMs
         uses: actions/download-artifact@v4
-        with:
-          name: flattened-sbom-cyclonedx
 
       - name: "Debug: SBOMs"
         run: |
