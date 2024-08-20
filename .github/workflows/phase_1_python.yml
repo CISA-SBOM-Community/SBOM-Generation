@@ -113,10 +113,9 @@ jobs:
         uses: actions/download-artifact@v4
 
       - name: Enrich Container CycloneDX
-        working-directory: "Phase 1/Python"
         run: |
           export SBOM_NAME='phase1-python-container'
-          cat sbom/metadata.cdx.json.tmpl | jq | \
+          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
             envsubst > metadata.cdx.json
           unset SBOM_NAME
 
@@ -127,10 +126,9 @@ jobs:
             > /tmp/enriched_container-sbom_cyclonedx.json
 
       - name: Enrich Application CycloneDX
-        working-directory: "Phase 1/Python"
         run: |
           export SBOM_NAME='phase1-python-application'
-          cat sbom/metadata.cdx.json.tmpl | jq | \
+          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
             envsubst > metadata.cdx.json
           unset SBOM_NAME
 
