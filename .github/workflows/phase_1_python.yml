@@ -5,6 +5,7 @@ on: [push]
 env:
   TRIVY_VERSION: 0.54.1
   SBOMASM_VERSION: 0.1.4
+  SEMVER: 0.1.0
 
 jobs:
   Container:
@@ -98,35 +99,64 @@ jobs:
           name: application-sbom-spdx
           path: "/tmp/application-sbom_spdx.json"
 
-  Assemble:
+  Enrich:
     runs-on: ubuntu-latest
     needs: [Container, Application]
-    steps:
 
-      # To marge both a container and application SBOM, we
-      # need to use hierarchy structure. The tooling isn't there yet.
-      # We are exploring `sbomasm` and `bomctl` for this step.
+      # We need to assemble the SBOMs into a hierarchy.
+      # https://github.com/CISA-SBOM-Community/SBOM-Generation/issues/22
 
       - uses: actions/checkout@v4
 
-      - name: Install sbomasm
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Enrich Container CycloneDX
         run: |
-          curl -L -o /tmp/sbomasm \
-            "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
-          chmod +x /tmp/sbomasm
+          export SBOM_NAME='phase1-python-container'
+          cat sbom/metadata.cdx.json.tmpl | jq | \
+            envsubst > metadata.cdx.json
+          unset SBOM_NAME
 
-      - name: "Merge Debugging"
+          # Merge together SBOM and metadata
+          jq --slurp '.[0] * .[1]' \
+            container-sbom-cyclonedx/container-sbom_cyclonedx.json \
+            metadata.cdx.json \
+            > /tmp/enriched_container-sbom_cyclonedx.json
+
+      - name: Enrich Application CycloneDX
         run: |
-          echo "Output file: /tmp/flattened-cyclonedx.json"
-          echo "Input files: container-sbom-cyclonedx/container-sbom_cyclonedx.json application-sbom-cyclonedx/application-sbom_cyclonedx.json"
+          export SBOM_NAME='phase1-python-application'
+          cat sbom/metadata.cdx.json.tmpl | jq | \
+            envsubst > metadata.cdx.json
+          unset SBOM_NAME
 
-          touch /tmp/flattened-cyclonedx.json
+          # Merge together SBOM and metadata
+          jq --slurp '.[0] * .[1]' \
+            container-sbom-cyclonedx/application-sbom_cyclonedx.json \
+            metadata.cdx.json \
+            > /tmp/enriched_application-sbom_cyclonedx.json
 
-      - name: Upload Combined CycloneDX SBOM
+      - name: Upload CycloneDX SBOM
         uses: actions/upload-artifact@v4
         with:
-          name: flattened-sbom-cyclonedx
-          path: "/tmp/flattened-cyclonedx.json"
+          name: sbom-cyclonedx
+          path: "/tmp/enriched_*.json"
+
+  Assemble:
+    runs-on: ubuntu-latest
+    needs: [Enrich]
+    steps:
+
+      # We need to assemble the SBOMs into a hierarchy.
+      # https://github.com/CISA-SBOM-Community/SBOM-Generation/issues/22
+      #
+      # Input files:
+      # * container-sbom-cyclonedx/container-sbom_cyclonedx.json
+      # * application-sbom-cyclonedx/application-sbom_cyclonedx.json"
+
+      - uses: actions/checkout@v4
+
 
   Validate:
     needs: Assemble
