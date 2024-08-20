@@ -138,7 +138,7 @@ jobs:
 
           # Merge together SBOM and metadata
           jq --slurp '.[0] * .[1]' \
-            container-sbom-cyclonedx/application-sbom_cyclonedx.json \
+            application-sbom-cyclonedx/application-sbom_cyclonedx.json \
             metadata.cdx.json \
             > /tmp/enriched_application-sbom_cyclonedx.json
 
