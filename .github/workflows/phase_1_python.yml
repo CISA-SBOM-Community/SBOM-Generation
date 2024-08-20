@@ -155,7 +155,7 @@ jobs:
             metadata.cdx.json \
             > /tmp/enriched_container-sbom_spdx.json
 
-      - name: Enrich Application CycloneDX
+      - name: Enrich Application SPDX
         run: |
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
@@ -170,10 +170,10 @@ jobs:
             metadata.cdx.json \
             > /tmp/enriched_application-sbom_spdx.json
 
-      - name: Upload CycloneDX SBOM
+      - name: Upload Enriched SBOMs
         uses: actions/upload-artifact@v4
         with:
-          name: sbom-cyclonedx
+          name: enriched-sboms
           path: "/tmp/enriched_*.json"
 
   Assemble:
