@@ -4,7 +4,7 @@ on: [push]
 
 env:
   TRIVY_VERSION: 0.54.1
-  SBOMASM_VERSION: 0.1.4
+  SBOMQS_VERSION: 0.1.7
   SEMVER: 0.1.0
 
 jobs:
@@ -200,6 +200,15 @@ jobs:
       - name: Download SBOMs
         uses: actions/download-artifact@v4
 
-      - name: "Debug: SBOMs"
+      - name: Install sbomqs
         run: |
-          find . -iname *.json
+          curl -L -o /tmp/sbomqs \
+            "https://github.com/interlynk-io/sbomqs/releases/download/v${SBOMQS_VERSION}/sbomqs-linux-amd64"
+          chmod +x /tmp/sbomqs
+
+
+      - name: "Display SBOM quality score through sqomqs"
+        run: |
+          for SBOM in $(find . -iname *.json); do
+            /tmp/sbomqs score "$SBOM"
+          done
