@@ -14,6 +14,13 @@ Tuesdays @ 10am Eastern / 7am Pacific
 
 This project will create example pipelines/workflows in GitHub and GitLab demonstrating how to generate quality SBOMs for various software types:
 
+### SBOM Type
+
+This activity only covers [SBOMs of Type Source or Build](https://www.cisa.gov/sites/default/files/2023-04/sbom-types-document-508c.pdf) as SBOMs of other types are typically not curated by the maintainers of Open Source software but instead by consumers of Open Source software. For Source and Build SBOMs, the contents of the SBOM describing the artifact will only include what is being distributed and will not contain information about prospective uses of the software during or after installation or running of the software. That information is captured in separate SBOM types (ie Deployment, Runtime).
+
+> In the context of this document, the “source” is defined as a snapshot of the source code made available to download, such as in a tgz archive.
+> The “build” is the artifacts that are built by the project and released. These could be tgz archives, but also other artifacts such as rpm, deb, or zip.
+
 ### Phase 1
 
 - Java Application
@@ -40,6 +47,8 @@ The project will be considered "done" when:
 - Workflows in these projects create SBOMs that:
   - Meet and exceed NTIA Minimum Elements.
   - Align with relevant Community Tiger Team whitepapers.
+    - [SBOM Sharing Primer](https://www.cisa.gov/sites/default/files/2024-05/SBOM%20Sharing%20Primer.pdf)
+    - [Framing Software Component Transparency Third Edition (DRAFT)](https://docs.google.com/document/d/1uddfhPqflTOeYK7ZJjS4gGa8pspwez6mhJUjTrvu4J4/edit?usp=sharing)
   - Are stored following OpenSSF guidance (including examples for importing into tools like DependencyTrack).
 - A white paper documents:
   - Hurdles encountered during development.
@@ -73,12 +82,27 @@ The project will be considered "done" when:
 - Tool deployments requiring maintenance or cost.
 - SBOM signing (future Tiger Team initiative).
 
-## Timeline & Contribution
+## Timeline
 
-This project has an estimated end date of [Target End Date]. We welcome contributions from individuals with:
+This project has an estimated end date of __January 14, 2025__, and has several intermediate due dates for each phase.
+
+- Phase 1 (duration 6 weeks)
+  - Expected completion __September 10, 2024__
+- Phase 2 (duration 6 weeks)
+  - Expected completion __October 22, 2024__
+- Phase 3 (duration 6 weeks)
+  - Expected completion __December 3, 2024__
+- White Paper Completion (duration 6 weeks)
+  - Expected completion __January 14, 2025__
+
+## Contribution
+
+We welcome contributions from anyone in the community and especially individuals with:
 
 - DevSecOps experience (GitLab & GitHub platforms).
 - Open-source project experience (asynchronous collaboration).
+
+Please read the [Contribution Guidance](CONTRIBUTING.md).
 
 ## Join the Effort
 
