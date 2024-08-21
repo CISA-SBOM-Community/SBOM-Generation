@@ -106,10 +106,6 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
 
-      - name: "Debug: SBOMs"
-        run: |
-          find . -iname *.json
-
       - name: Enrich Container CycloneDX
         run: |
           # We're using `envsubst` here to populate the metadata
