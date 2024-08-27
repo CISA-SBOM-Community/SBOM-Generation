@@ -4,7 +4,7 @@ on: [push]
 
 env:
   TRIVY_VERSION: 0.54.1
-  SBOMQS_VERSION: 0.1.7
+  SBOMQS_VERSION: 0.1.9
   SEMVER: 0.1.0
 
 jobs:
@@ -33,25 +33,25 @@ jobs:
         run: |
           /tmp/trivy image \
             --format cyclonedx \
-            --output /tmp/container-sbom_cyclonedx.json \
+            --output /tmp/container-sbom.cdx.json \
             phase-1-python
 
           /tmp/trivy image \
             --format spdx-json \
-            --output /tmp/container-sbom_spdx.json \
+            --output /tmp/container-sbom.spdx.json \
             phase-1-python
 
       - name: Upload CycloneDX SBOM
         uses: actions/upload-artifact@v4
         with:
           name: container-sbom-cyclonedx
-          path: "/tmp/container-sbom_cyclonedx.json"
+          path: "/tmp/container-sbom.cdx.json"
 
       - name: Upload SPDX SBOM
         uses: actions/upload-artifact@v4
         with:
           name: container-sbom-spdx
-          path: "/tmp/container-sbom_spdx.json"
+          path: "/tmp/container-sbom.spdx.json"
 
   Application:
     runs-on: ubuntu-latest
@@ -70,7 +70,7 @@ jobs:
         run: |
           /tmp/trivy fs \
             --format cyclonedx \
-            --output /tmp/application-sbom_cyclonedx.json \
+            --output /tmp/application-sbom.cdx.json \
             requirements.txt
 
       - name: "SPDX: Generate SBOM"
@@ -78,20 +78,20 @@ jobs:
         run: |
           /tmp/trivy fs \
             --format spdx-json \
-            --output /tmp/application-sbom_spdx.json \
+            --output /tmp/application-sbom.spdx.json \
             requirements.txt
 
       - name: Upload CycloneDX SBOM
         uses: actions/upload-artifact@v4
         with:
           name: application-sbom-cyclonedx
-          path: "/tmp/application-sbom_cyclonedx.json"
+          path: "/tmp/application-sbom.cdx.json"
 
       - name: Upload SPDX SBOM
         uses: actions/upload-artifact@v4
         with:
           name: application-sbom-spdx
-          path: "/tmp/application-sbom_spdx.json"
+          path: "/tmp/application-sbom.spdx.json"
 
   Enrich:
     runs-on: ubuntu-latest
@@ -117,9 +117,9 @@ jobs:
 
           # Merge together SBOM and metadata
           jq --slurp '.[0] * .[1]' \
-            container-sbom-cyclonedx/container-sbom_cyclonedx.json \
+            container-sbom-cyclonedx/container-sbom.cdx.json \
             metadata.cdx.json \
-            > /tmp/enriched_container-sbom_cyclonedx.json
+            > /tmp/enriched_container-sbom.cdx.json
 
       - name: Enrich Application CycloneDX
         run: |
@@ -132,9 +132,9 @@ jobs:
 
           # Merge together SBOM and metadata
           jq --slurp '.[0] * .[1]' \
-            application-sbom-cyclonedx/application-sbom_cyclonedx.json \
+            application-sbom-cyclonedx/application-sbom.cdx.json \
             metadata.cdx.json \
-            > /tmp/enriched_application-sbom_cyclonedx.json
+            > /tmp/enriched_application-sbom.cdx.json
 
       - name: Enrich Container SPDX
         run: |
@@ -147,9 +147,9 @@ jobs:
 
           # Merge together SBOM and metadata
           jq --slurp '.[0] * .[1]' \
-            container-sbom-spdx/container-sbom_spdx.json \
+            container-sbom-spdx/container-sbom.spdx.json \
             metadata.cdx.json \
-            > /tmp/enriched_container-sbom_spdx.json
+            > /tmp/enriched_container-sbom.spdx.json
 
       - name: Enrich Application SPDX
         run: |
@@ -162,9 +162,9 @@ jobs:
 
           # Merge together SBOM and metadata
           jq --slurp '.[0] * .[1]' \
-            application-sbom-spdx/application-sbom_spdx.json \
+            application-sbom-spdx/application-sbom.spdx.json \
             metadata.cdx.json \
-            > /tmp/enriched_application-sbom_spdx.json
+            > /tmp/enriched_application-sbom.spdx.json
 
       - name: Upload Enriched SBOMs
         uses: actions/upload-artifact@v4
@@ -181,8 +181,8 @@ jobs:
       # https://github.com/CISA-SBOM-Community/SBOM-Generation/issues/22
       #
       # Input files:
-      # * container-sbom-cyclonedx/container-sbom_cyclonedx.json
-      # * application-sbom-cyclonedx/application-sbom_cyclonedx.json"
+      # * container-sbom-cyclonedx/container-sbom.cdx.json
+      # * application-sbom-cyclonedx/application-sbom.cdx.json"
 
       - uses: actions/checkout@v4
 
