@@ -197,13 +197,13 @@ jobs:
           jq --slurp '.[0] * .[1]' \
             top-level.cdx.json \
             metadata.cdx.json \
-            > /tmp/top-level-sbom.spdx.json
+            > /tmp/top-level-sbom.cdx.json
 
       - name: Upload Top Level SBOMs
         uses: actions/upload-artifact@v4
         with:
           name: top-level-sboms
-          path: "/tmp/top-level.*.json"
+          path: "/tmp/top-level-sbom.*.json"
 
 
   Validate:
