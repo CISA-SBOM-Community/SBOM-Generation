@@ -98,9 +98,6 @@ jobs:
     needs: [Container, Application]
     steps:
 
-      # We need to assemble the SBOMs into a hierarchy.
-      # https://github.com/CISA-SBOM-Community/SBOM-Generation/issues/22
-
       - uses: actions/checkout@v4
 
       - name: Download all workflow run artifacts
@@ -176,16 +173,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: [Enrich]
     steps:
-
-      # We need to assemble the SBOMs into a hierarchy.
-      # https://github.com/CISA-SBOM-Community/SBOM-Generation/issues/22
-      #
-      # Input files:
-      # * container-sbom-cyclonedx/container-sbom.cdx.json
-      # * application-sbom-cyclonedx/application-sbom.cdx.json"
-
       - uses: actions/checkout@v4
 
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Debug
+        run: find . -iname "*.json"
 
   Validate:
     needs: Assemble
