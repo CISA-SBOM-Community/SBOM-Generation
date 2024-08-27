@@ -1,37 +1,44 @@
 {
-  "$${no_value}schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
-  "bomFormat": "CycloneDX",
-  "specVersion": "1.6",
-  "serialNumber": "urn:uuid:${TOP_LEVEL_UUID}",
-  "components": [
-    {
-      "type": "application",
-      "name": "${SBOM_NAME}",
-      "version": "${SEMVER}",
-      "externalReferences": [
+    "$${no_value}schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.6",
+    "serialNumber": "urn:uuid:${TOP_LEVEL_UUID}",
+    "components": [
         {
-          "type": "bom",
-          "url": "https://example.org/support/sbom/phase1-python-application/${SEMVER}",
-          "comment": "SBOM Generation Reference Implementations: Python/Django application",
-          "hashes": [
-            {
-              "alg": "SHA-256",
-              "content": "${APPLICATION_SBOM_SHA256}"
-            }
-          ]
+            "type": "application",
+            "name": "phase1-python-application",
+            "version": "${SEMVER}",
+            "externalReferences": [
+                {
+                    "type": "bom",
+                    "url": "https://example.org/support/sbom/phase1-python-application/${SEMVER}",
+                    "comment": "SBOM Generation Reference Implementations: Python/Django application",
+                    "hashes": [
+                        {
+                            "alg": "SHA-256",
+                            "content": "${APPLICATION_SBOM_SHA256}"
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "type": "bom",
-          "url": "https://example.org/support/sbom/phase1-python-container/${SEMVER}",
-          "comment": "SBOM Generation Reference Implementations: Docker container for Python/Django application",
-          "hashes": [
-            {
-              "alg": "SHA-256",
-              "content": "${CONTAINER_SBOM_SHA256}"
-            }
-          ]
+            "type": "container",
+            "name": "phase1-python-container",
+            "version": "${SEMVER}",
+            "externalReferences": [
+                {
+                    "type": "bom",
+                    "url": "https://example.org/support/sbom/phase1-python-container/${SEMVER}",
+                    "comment": "SBOM Generation Reference Implementations: Docker container for Python/Django application",
+                    "hashes": [
+                        {
+                            "alg": "SHA-256",
+                            "content": "${CONTAINER_SBOM_SHA256}"
+                        }
+                    ]
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }
