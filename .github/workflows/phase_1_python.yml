@@ -184,13 +184,25 @@ jobs:
           export APPLICATION_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_application-sbom.cdx.json | awk {'print $1'})
           export CONTAINER_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_container-sbom.cdx.json | awk {'print $1'})
 
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables
           cat "Phase 1/Python/sbom/top-level.cdx.json.tmpl" | jq | \
-            envsubst > /tmp/top-level.cdx.json
+            envsubst > top-level.cdx.json
+
+          export SBOM_NAME='phase1-python'
+          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
+            envsubst > metadata.cdx.json
+
+          # Merge together SBOM and metadata
+          jq --slurp '.[0] * .[1]' \
+            top-level.cdx.json \
+            metadata.cdx.json \
+            > /tmp/top-level-sbom.spdx.json
 
       - name: Upload Top Level SBOMs
         uses: actions/upload-artifact@v4
         with:
-          name: enriched-sboms
+          name: top-level-sboms
           path: "/tmp/top-level.*.json"
 
 
