@@ -178,8 +178,21 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
 
-      - name: Debug
-        run: find . -iname "*.json"
+      - name: Build top-level CDX SBOM
+        run: |
+          export TOP_LEVEL_UUID=$(uuidgen)
+          export APPLICATION_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_application-sbom.cdx.json | awk {'print $1'})
+          export CONTAINER_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_container-sbom.cdx.json | awk {'print $1'})
+
+          cat "Phase 1/Python/sbom/top-level.cdx.json.tmpl" | jq | \
+            envsubst > /tmp/top-level.cdx.json
+
+      - name: Upload Top Level SBOMs
+        uses: actions/upload-artifact@v4
+        with:
+          name: enriched-sboms
+          path: "/tmp/top-level.*.json"
+
 
   Validate:
     needs: Assemble
