@@ -209,9 +209,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: top-level-sboms
-          path:
-          - "/tmp/top-level-sbom.*.json"
-          - "enriched-sboms/*.json"
+          path: |
+            "/tmp/top-level-sbom.*.json"
+            "enriched-sboms/*.json"
 
 
   Validate:
