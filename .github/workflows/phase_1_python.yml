@@ -182,10 +182,13 @@ jobs:
 
       - name: Build top-level CDX SBOM
         run: |
+          # Define metadata for parent template
           export TOP_LEVEL_UUID=$(uuidgen)
           export APPLICATION_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_application-sbom.cdx.json | awk {'print $1'})
           export CONTAINER_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_container-sbom.cdx.json | awk {'print $1'})
           export CREATION_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S%z")
+          export CONTAINER_BOM_REF=$(jq -r '.metadata.component["bom-ref"]' "enriched-sboms/enriched_container-sbom.cdx.json)
+          export APPLICATION_BOM_REF=$(jq -r '.metadata.component["bom-ref"]' "enriched-sboms/enriched_application-sbom.cdx.json)
 
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
@@ -206,7 +209,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: top-level-sboms
-          path: "/tmp/top-level-sbom.*.json"
+          path:
+          - "/tmp/top-level-sbom.*.json"
+          - "enriched-sboms/*.json"
 
 
   Validate:

@@ -3,10 +3,14 @@
     "bomFormat": "CycloneDX",
     "specVersion": "1.6",
     "serialNumber": "urn:uuid:${TOP_LEVEL_UUID}",
+    "metadata": {
+        "timestamp": "${CREATION_TIMESTAMP}"
+    }
     "components": [
         {
             "type": "application",
             "name": "phase1-python-application",
+            "bom-ref": "${APPLICATION_BOM_REF}",
             "version": "${SEMVER}",
             "externalReferences": [
                 {
@@ -25,6 +29,7 @@
         {
             "type": "container",
             "name": "phase1-python-container",
+            "bom-ref": "${CONTAINER_BOM_REF}",
             "version": "${SEMVER}",
             "externalReferences": [
                 {
