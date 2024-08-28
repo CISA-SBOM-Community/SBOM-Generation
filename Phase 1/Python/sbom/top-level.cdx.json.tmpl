@@ -4,7 +4,29 @@
     "specVersion": "1.6",
     "serialNumber": "urn:uuid:${TOP_LEVEL_UUID}",
     "metadata": {
-        "timestamp": "${CREATION_TIMESTAMP}"
+        "timestamp": "${CREATION_TIMESTAMP}",
+        "component": {
+            "name": "${SBOM_NAME}",
+            "description": "SBOM Generation Reference Implementations: Python/Django application running in a Docker container.",
+            "version": "${SEMVER}"
+        },
+        "licenses": [
+            {
+                "license": {
+                    "id": "Apache-2.0",
+                    "url": "https://raw.githubusercontent.com/CISA-SBOM-Community/SBOM-Generation/main/LICENSE"
+                }
+            }
+        ],
+        "lifecycles": [
+            {
+                "phase": "build"
+            }
+        ],
+        "supplier": {
+            "name": "CISA Tiger Group for SBOM Generation Reference Implementations",
+            "url": ["https://github.com/CISA-SBOM-Community/SBOM-Generation"]
+        }
     }
     "components": [
         {
@@ -12,6 +34,14 @@
             "name": "phase1-python-application",
             "bom-ref": "${APPLICATION_BOM_REF}",
             "version": "${SEMVER}",
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://raw.githubusercontent.com/CISA-SBOM-Community/SBOM-Generation/main/LICENSE"
+                    }
+                }
+            ],
             "externalReferences": [
                 {
                     "type": "bom",
@@ -31,6 +61,14 @@
             "name": "phase1-python-container",
             "bom-ref": "${CONTAINER_BOM_REF}",
             "version": "${SEMVER}",
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://raw.githubusercontent.com/CISA-SBOM-Community/SBOM-Generation/main/LICENSE"
+                    }
+                }
+            ],
             "externalReferences": [
                 {
                     "type": "bom",

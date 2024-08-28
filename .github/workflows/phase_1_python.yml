@@ -193,16 +193,11 @@ jobs:
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
           cat "Phase 1/Python/sbom/top-level.cdx.json.tmpl" | jq | \
-            envsubst > top-level.cdx.json
+            envsubst > top-level-sbom.cdx.json.tmp
 
-          export SBOM_NAME='phase1-python'
-          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
-            envsubst > metadata.cdx.json
-
-          # Merge together SBOM and metadata
-          jq --slurp '.[0] * .[1]' \
-            top-level.cdx.json \
-            metadata.cdx.json \
+          # Set GITHUB_RUN_NUMBER as the version of the SBOM
+          jq '.version = (env.GITHUB_RUN_NUMBER | tonumber)' \
+            top-level-sbom.cdx.json.tmp  \
             > /tmp/top-level-sbom.cdx.json
 
       - name: Upload Top Level SBOMs
