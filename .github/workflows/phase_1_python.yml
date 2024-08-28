@@ -182,6 +182,9 @@ jobs:
 
       - name: Build top-level CDX SBOM
         run: |
+          # Create destination folder
+          mkdir /tmp/output
+
           # Define metadata for parent template
           export TOP_LEVEL_UUID=$(uuidgen)
           export APPLICATION_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_application-sbom.cdx.json | awk {'print $1'})
@@ -198,15 +201,16 @@ jobs:
           # Set GITHUB_RUN_NUMBER as the version of the SBOM
           jq '.version = (env.GITHUB_RUN_NUMBER | tonumber)' \
             top-level-sbom.cdx.json.tmp  \
-            > /tmp/top-level-sbom.cdx.json
+            > /tmp/output/top-level-sbom.cdx.json
+
+          # Copy in enriched SBOMs
+          cp enriched-sboms/enriched_*-sbom.cdx.json /tmp/output/
 
       - name: Upload Top Level SBOMs
         uses: actions/upload-artifact@v4
         with:
           name: top-level-sboms
-          path: |
-            "/tmp/top-level-sbom.*.json"
-            "enriched-sboms/*.json"
+          path: /tmp/output/
 
 
   Validate:
