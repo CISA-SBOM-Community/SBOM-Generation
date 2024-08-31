@@ -27,14 +27,14 @@ jobs:
       - name: Generate SBOM with Trivy
         run: |
           /tmp/trivy fs \
-            --timeout 15m0s \
+            --timeout 20m0s \
             --parallel 0 \
             --format cyclonedx \
             --output /tmp/keycloak-sbom.cdx.json \
             keycloak-${KEYCLOAK_TAG}
 
           /tmp/trivy fs \
-            --timeout 15m0s \
+            --timeout 20m0s \
             --parallel 0 \
             --format spdx-json \
             --output /tmp/keycloak-sbom.spdx.json \
