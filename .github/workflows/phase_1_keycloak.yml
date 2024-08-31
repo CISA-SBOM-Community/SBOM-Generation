@@ -94,8 +94,10 @@ jobs:
             "https://github.com/interlynk-io/sbomqs/releases/download/v${SBOMQS_VERSION}/sbomqs-linux-amd64"
           chmod +x /tmp/sbomqs
 
-      - name: "Display SBOM quality score through sqomqs"
+      - name: "Display SBOM quality score through sbomqs"
         run: |
+          echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
           for SBOM in $(find . -iname *.json); do
-            /tmp/sbomqs score "$SBOM"
+            /tmp/sbomqs score "$SBOM" >> ${GITHUB_STEP_SUMMARY}
           done
+          echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
