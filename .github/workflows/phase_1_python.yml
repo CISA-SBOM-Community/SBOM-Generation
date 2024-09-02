@@ -229,7 +229,7 @@ jobs:
           chmod +x /tmp/sbomqs
 
 
-      - name: "Display SBOM quality score through sqomqs"
+      - name: "Display SBOM quality score through sbomqs"
         run: |
           for SBOM in $(find . -iname *.json); do
             /tmp/sbomqs score "$SBOM"
