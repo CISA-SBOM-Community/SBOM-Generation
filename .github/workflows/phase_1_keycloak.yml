@@ -51,6 +51,22 @@ jobs:
         with:
           name: keycloak-sbom-spdx
           path: "/tmp/keycloak-sbom.spdx.json"
+  Augment:
+    runs-on: ubuntu-latest
+    needs: Keycloak
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Augment Keycloak CycloneDX
+        run: |
+          echo "Augment of CycloneDX not supported."
+      - name: Augment Keycloak SPDX
+        run: |
+          echo "Augment of SPDX not supported."
 
   Enrich:
     runs-on: ubuntu-latest
