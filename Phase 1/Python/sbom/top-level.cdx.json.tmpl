@@ -1,0 +1,107 @@
+{
+    "$${no_value}schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.6",
+    "serialNumber": "urn:uuid:${TOP_LEVEL_UUID}",
+    "metadata": {
+        "timestamp": "${CREATION_TIMESTAMP}",
+        "component": {
+            "name": "${SBOM_NAME}",
+            "description": "SBOM Generation Reference Implementations: Python/Django application running in a Docker container.",
+            "version": "${SEMVER}"
+        },
+        "licenses": [
+            {
+                "license": {
+                    "id": "Apache-2.0",
+                    "url": "https://raw.githubusercontent.com/CISA-SBOM-Community/SBOM-Generation/main/LICENSE"
+                }
+            }
+        ],
+        "lifecycles": [
+            {
+                "phase": "build"
+            }
+        ],
+        "supplier": {
+            "name": "CISA Tiger Group for SBOM Generation Reference Implementations",
+            "url": ["https://github.com/CISA-SBOM-Community/SBOM-Generation"]
+        }
+    },
+    "components": [
+        {
+            "type": "application",
+            "name": "phase1-python-application",
+            "bom-ref": "${APPLICATION_BOM_REF}",
+            "version": "${SEMVER}",
+            "authors": [
+                {
+                    "name": "CISA Tiger Group for SBOM Generation Reference Implementations",
+                    "email": "placeholder@example.com"
+                }
+            ],
+            "supplier": {
+                "name": "CISA Tiger Group for SBOM Generation Reference Implementations",
+                "url": ["https://github.com/CISA-SBOM-Community/SBOM-Generation"]
+            },
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://raw.githubusercontent.com/CISA-SBOM-Community/SBOM-Generation/main/LICENSE"
+                    }
+                }
+            ],
+            "externalReferences": [
+                {
+                    "type": "bom",
+                    "url": "https://example.org/support/sbom/phase1-python-application/${SEMVER}",
+                    "comment": "SBOM Generation Reference Implementations: Python/Django application",
+                    "hashes": [
+                        {
+                            "alg": "SHA-256",
+                            "content": "${APPLICATION_SBOM_SHA256}"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "container",
+            "name": "phase1-python-container",
+            "bom-ref": "${CONTAINER_BOM_REF}",
+            "version": "${SEMVER}",
+            "authors": [
+                {
+                    "name": "CISA Tiger Group for SBOM Generation Reference Implementations",
+                    "email": "placeholder@example.com"
+                }
+            ],
+            "supplier": {
+                "name": "CISA Tiger Group for SBOM Generation Reference Implementations",
+                "url": ["https://github.com/CISA-SBOM-Community/SBOM-Generation"]
+            },
+            "licenses": [
+                {
+                    "license": {
+                        "id": "Apache-2.0",
+                        "url": "https://raw.githubusercontent.com/CISA-SBOM-Community/SBOM-Generation/main/LICENSE"
+                    }
+                }
+            ],
+            "externalReferences": [
+                {
+                    "type": "bom",
+                    "url": "https://example.org/support/sbom/phase1-python-container/${SEMVER}",
+                    "comment": "SBOM Generation Reference Implementations: Docker container for Python/Django application",
+                    "hashes": [
+                        {
+                            "alg": "SHA-256",
+                            "content": "${CONTAINER_SBOM_SHA256}"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

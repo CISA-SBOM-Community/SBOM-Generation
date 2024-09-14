@@ -1,0 +1,238 @@
+---
+name: Phase 1 - Python
+on: [push]
+
+env:
+  TRIVY_VERSION: 0.54.1
+  SBOMQS_VERSION: 0.1.9
+  SEMVER: 0.1.0
+
+jobs:
+  Container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # We're using native docker build here rather
+      # than 'docker/build-push-action' to make the run
+      # more pipeline agnostic.
+      - name: Build Docker image
+        working-directory: "Phase 1/Python"
+        run: |
+          docker build -t phase-1-python .
+
+      - name: Install Trivy
+        run: |
+          curl -L -o /tmp/trivy.tgz \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          tar xvf /tmp/trivy.tgz -C /tmp
+          chmod +x /tmp/trivy
+
+      - name: Generate SBOM with Trivy
+        working-directory: "Phase 1/Python"
+        run: |
+          /tmp/trivy image \
+            --format cyclonedx \
+            --output /tmp/container-sbom.cdx.json \
+            phase-1-python
+
+          /tmp/trivy image \
+            --format spdx-json \
+            --output /tmp/container-sbom.spdx.json \
+            phase-1-python
+
+      - name: Upload CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-sbom-cyclonedx
+          path: "/tmp/container-sbom.cdx.json"
+
+      - name: Upload SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-sbom-spdx
+          path: "/tmp/container-sbom.spdx.json"
+
+  Application:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Trivy
+        run: |
+          curl -L -o /tmp/trivy.tgz \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          tar xvf /tmp/trivy.tgz -C /tmp
+          chmod +x /tmp/trivy
+
+      - name: "CycloneDX: Generate SBOM"
+        working-directory: "Phase 1/Python"
+        run: |
+          /tmp/trivy fs \
+            --format cyclonedx \
+            --output /tmp/application-sbom.cdx.json \
+            requirements.txt
+
+      - name: "SPDX: Generate SBOM"
+        working-directory: "Phase 1/Python"
+        run: |
+          /tmp/trivy fs \
+            --format spdx-json \
+            --output /tmp/application-sbom.spdx.json \
+            requirements.txt
+
+      - name: Upload CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-sbom-cyclonedx
+          path: "/tmp/application-sbom.cdx.json"
+
+      - name: Upload SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-sbom-spdx
+          path: "/tmp/application-sbom.spdx.json"
+
+  Enrich:
+    runs-on: ubuntu-latest
+    needs: [Container, Application]
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Enrich Container CycloneDX
+        run: |
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables
+          export SBOM_NAME='phase1-python-container'
+          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
+            envsubst > metadata.cdx.json
+          unset SBOM_NAME
+
+          # Merge together SBOM and metadata
+          jq --slurp '.[0] * .[1]' \
+            container-sbom-cyclonedx/container-sbom.cdx.json \
+            metadata.cdx.json \
+            > /tmp/enriched_container-sbom.cdx.json
+
+      - name: Enrich Application CycloneDX
+        run: |
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables
+          export SBOM_NAME='phase1-python-application'
+          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
+            envsubst > metadata.cdx.json
+          unset SBOM_NAME
+
+          # Merge together SBOM and metadata
+          jq --slurp '.[0] * .[1]' \
+            application-sbom-cyclonedx/application-sbom.cdx.json \
+            metadata.cdx.json \
+            > /tmp/enriched_application-sbom.cdx.json
+
+      - name: Enrich Container SPDX
+        run: |
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables
+          export SBOM_NAME='phase1-python-container'
+          cat "Phase 1/Python/sbom/metadata.spdx.json.tmpl" | jq | \
+            envsubst > metadata.spdx.json
+          unset SBOM_NAME
+
+          # Merge together SBOM and metadata
+          jq --slurp '.[0] * .[1]' \
+            container-sbom-spdx/container-sbom.spdx.json \
+            metadata.cdx.json \
+            > /tmp/enriched_container-sbom.spdx.json
+
+      - name: Enrich Application SPDX
+        run: |
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables
+          export SBOM_NAME='phase1-python-application'
+          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
+            envsubst > metadata.cdx.json
+          unset SBOM_NAME
+
+          # Merge together SBOM and metadata
+          jq --slurp '.[0] * .[1]' \
+            application-sbom-spdx/application-sbom.spdx.json \
+            metadata.cdx.json \
+            > /tmp/enriched_application-sbom.spdx.json
+
+      - name: Upload Enriched SBOMs
+        uses: actions/upload-artifact@v4
+        with:
+          name: enriched-sboms
+          path: "/tmp/enriched_*.json"
+
+  Assemble:
+    runs-on: ubuntu-latest
+    needs: [Enrich]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      #  TODO: Add SPDX
+
+      - name: Build top-level CDX SBOM
+        run: |
+          # Create destination folder
+          mkdir /tmp/output
+
+          # Define metadata for parent template
+          export TOP_LEVEL_UUID=$(uuidgen)
+          export APPLICATION_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_application-sbom.cdx.json | awk {'print $1'})
+          export CONTAINER_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_container-sbom.cdx.json | awk {'print $1'})
+          export CREATION_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S%z")
+          export CONTAINER_BOM_REF=$(jq -r '.metadata.component["bom-ref"]' enriched-sboms/enriched_container-sbom.cdx.json)
+          export APPLICATION_BOM_REF=$(jq -r '.metadata.component["bom-ref"]' enriched-sboms/enriched_application-sbom.cdx.json)
+
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables
+          cat "Phase 1/Python/sbom/top-level.cdx.json.tmpl" | jq | \
+            envsubst > top-level-sbom.cdx.json.tmp
+
+          # Set GITHUB_RUN_NUMBER as the version of the SBOM
+          jq '.version = (env.GITHUB_RUN_NUMBER | tonumber)' \
+            top-level-sbom.cdx.json.tmp  \
+            > /tmp/output/top-level-sbom.cdx.json
+
+          # Copy in enriched SBOMs
+          cp enriched-sboms/enriched_*-sbom.cdx.json /tmp/output/
+
+      - name: Upload Top Level SBOMs
+        uses: actions/upload-artifact@v4
+        with:
+          name: top-level-sboms
+          path: /tmp/output/
+
+
+  Validate:
+    needs: Assemble
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download SBOMs
+        uses: actions/download-artifact@v4
+
+      - name: Install sbomqs
+        run: |
+          curl -L -o /tmp/sbomqs \
+            "https://github.com/interlynk-io/sbomqs/releases/download/v${SBOMQS_VERSION}/sbomqs-linux-amd64"
+          chmod +x /tmp/sbomqs
+
+
+      - name: "Display SBOM quality score through sbomqs"
+        run: |
+          echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
+          for SBOM in $(find . -iname *.json); do
+            /tmp/sbomqs score "$SBOM" >> ${GITHUB_STEP_SUMMARY}
+          done
+          echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
