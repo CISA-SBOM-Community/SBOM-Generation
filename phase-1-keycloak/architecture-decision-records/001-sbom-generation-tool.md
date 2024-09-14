@@ -65,7 +65,7 @@ This decision is based on the following factors:
 - No SPDX Support
   - A requirement for this tiger team is to support both major SBOM formats. [cyclonedx-maven-plugin](https://github.com/CycloneDX/cyclonedx-maven-plugin) only supports CycloneDX
 - Needs to be added to all project `pom.xml` files
-  - We want to avoid directly modifying the configuration files of Keycloak
+  - We want to avoid directly modifying the configuration files of Keycloak for the purpose of this example workflow. If this were to be incorporated directly into the project this would not be an issue.
 
 :note: If you only need CycloneDX sboms for a java project, we'd recommend teams investigate this tool.
 
