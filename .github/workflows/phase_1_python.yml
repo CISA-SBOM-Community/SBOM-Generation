@@ -17,7 +17,7 @@ jobs:
       # than 'docker/build-push-action' to make the run
       # more pipeline agnostic.
       - name: Build Docker image
-        working-directory: "Phase 1/Python"
+        working-directory: "phase_1/Python"
         run: |
           docker build -t phase-1-python .
 
@@ -29,7 +29,7 @@ jobs:
           chmod +x /tmp/trivy
 
       - name: Generate SBOM with Trivy
-        working-directory: "Phase 1/Python"
+        working-directory: "phase_1/Python"
         run: |
           /tmp/trivy image \
             --format cyclonedx \
@@ -66,7 +66,7 @@ jobs:
           chmod +x /tmp/trivy
 
       - name: "CycloneDX: Generate SBOM"
-        working-directory: "Phase 1/Python"
+        working-directory: "phase_1/Python"
         run: |
           /tmp/trivy fs \
             --format cyclonedx \
@@ -74,7 +74,7 @@ jobs:
             requirements.txt
 
       - name: "SPDX: Generate SBOM"
-        working-directory: "Phase 1/Python"
+        working-directory: "phase_1/Python"
         run: |
           /tmp/trivy fs \
             --format spdx-json \
@@ -108,7 +108,7 @@ jobs:
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
           export SBOM_NAME='phase1-python-container'
-          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
+          cat "phase_1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
             envsubst > metadata.cdx.json
           unset SBOM_NAME
 
@@ -123,7 +123,7 @@ jobs:
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
           export SBOM_NAME='phase1-python-application'
-          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
+          cat "phase_1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
             envsubst > metadata.cdx.json
           unset SBOM_NAME
 
@@ -138,7 +138,7 @@ jobs:
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
           export SBOM_NAME='phase1-python-container'
-          cat "Phase 1/Python/sbom/metadata.spdx.json.tmpl" | jq | \
+          cat "phase_1/Python/sbom/metadata.spdx.json.tmpl" | jq | \
             envsubst > metadata.spdx.json
           unset SBOM_NAME
 
@@ -153,7 +153,7 @@ jobs:
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
           export SBOM_NAME='phase1-python-application'
-          cat "Phase 1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
+          cat "phase_1/Python/sbom/metadata.cdx.json.tmpl" | jq | \
             envsubst > metadata.cdx.json
           unset SBOM_NAME
 
@@ -195,7 +195,7 @@ jobs:
 
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
-          cat "Phase 1/Python/sbom/top-level.cdx.json.tmpl" | jq | \
+          cat "phase_1/Python/sbom/top-level.cdx.json.tmpl" | jq | \
             envsubst > top-level-sbom.cdx.json.tmp
 
           # Set GITHUB_RUN_NUMBER as the version of the SBOM
