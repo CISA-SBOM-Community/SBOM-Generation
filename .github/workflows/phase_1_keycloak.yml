@@ -63,14 +63,24 @@ jobs:
 
       - name: Augment Keycloak CycloneDX
         run: |
-          echo "Augment of CycloneDX not supported."
+          # We're using `envsubst` here to populate the metadata
+          # template from environment variables already present
+          # - KEYCLOAK_TAG
+          cat "phase_1/keycloak/sbom/metadata.cdx.json.tmpl" | envsubst > metadata.cdx.json
+          
+          # Merge together SBOM and metadata
+          jq --slurp '.[0] * .[1]' \
+            keycloak-sbom-cyclonedx/keycloak-sbom.cdx.json \
+            metadata.cdx.json \
+            > /tmp/augmented_keycloak-sbom.cdx.json
+
       - name: Augment Keycloak SPDX
         run: |
           echo "Augment of SPDX not supported."
 
   Enrich:
     runs-on: ubuntu-latest
-    needs: Keycloak
+    needs: Augment
     steps:
 
       - uses: actions/checkout@v4
