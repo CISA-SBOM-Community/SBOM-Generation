@@ -8,7 +8,7 @@ env:
   SEMVER: 0.1.0
 
 jobs:
-  Create_Container:
+  Generate_Container:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53,7 +53,7 @@ jobs:
           name: container-sbom-spdx
           path: "/tmp/container-sbom.spdx.json"
 
-  Create_Application:
+  Generate_Application:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,7 +95,7 @@ jobs:
 
   Augment:
     runs-on: ubuntu-latest
-    needs: [Create_Container, Create_Application]
+    needs: [Generate_Container, Generate_Application]
     steps:
 
       - uses: actions/checkout@v4
@@ -182,7 +182,7 @@ jobs:
 
       - name: Build top-level CDX SBOM
         run: |
-          # Create destination folder
+          # Generate destination folder
           mkdir /tmp/output
 
           # Define metadata for parent template
