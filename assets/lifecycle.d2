@@ -1,0 +1,27 @@
+direction: right
+
+title: |md
+
+  # SBOM Life Cycle
+
+| {near: top-center}
+
+Generation {
+  Creation
+  Augmentation
+  Enrichment
+  Signing
+}
+
+Collaboration {
+
+}
+
+Analysis {
+
+}
+
+Generation.Creation -> Generation.Augmentation
+Generation.Augmentation -> Generation.Enrichment
+Generation.Enrichment -> Generation.Signing
+Generation.Signing -> Collaboration -> Analysis
