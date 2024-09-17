@@ -182,7 +182,7 @@ jobs:
 
       - name: Build top-level CDX SBOM
         run: |
-          # Generate destination folder
+          # Create destination folder
           mkdir /tmp/output
 
           # Define metadata for parent template
