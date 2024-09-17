@@ -8,7 +8,7 @@ env:
   SBOMQS_VERSION: 0.1.9
 
 jobs:
-  Keycloak:
+  Create:
     runs-on: ubuntu-latest
     steps:
       - name: Install Trivy
@@ -51,6 +51,7 @@ jobs:
         with:
           name: keycloak-sbom-spdx
           path: "/tmp/keycloak-sbom.spdx.json"
+
   Augment:
     runs-on: ubuntu-latest
     needs: Keycloak
@@ -86,7 +87,7 @@ jobs:
         run: |
           echo "Enrichment of SPDX not supported."
 
-  Assemble:
+  Consolidate:
     runs-on: ubuntu-latest
     needs: Enrich
     steps:
