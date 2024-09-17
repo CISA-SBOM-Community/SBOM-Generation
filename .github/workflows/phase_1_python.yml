@@ -95,7 +95,7 @@ jobs:
 
   Augment:
     runs-on: ubuntu-latest
-    needs: [Container, Application]
+    needs: [Create_Container, Create_Application]
     steps:
 
       - uses: actions/checkout@v4
@@ -103,7 +103,7 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
 
-      - name: Enrich Container CycloneDX
+      - name: Augment Container CycloneDX
         run: |
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
@@ -118,7 +118,7 @@ jobs:
             metadata.cdx.json \
             > /tmp/enriched_container-sbom.cdx.json
 
-      - name: Enrich Application CycloneDX
+      - name: Augment Application CycloneDX
         run: |
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
@@ -133,7 +133,7 @@ jobs:
             metadata.cdx.json \
             > /tmp/enriched_application-sbom.cdx.json
 
-      - name: Enrich Container SPDX
+      - name: Augment Container SPDX
         run: |
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
@@ -148,7 +148,7 @@ jobs:
             metadata.cdx.json \
             > /tmp/enriched_container-sbom.spdx.json
 
-      - name: Enrich Application SPDX
+      - name: Augment Application SPDX
         run: |
           # We're using `envsubst` here to populate the metadata
           # template from environment variables
@@ -171,7 +171,7 @@ jobs:
 
   Consolidate:
     runs-on: ubuntu-latest
-    needs: [Enrich]
+    needs: [Augment]
     steps:
       - uses: actions/checkout@v4
 
@@ -214,7 +214,7 @@ jobs:
 
 
   Validate:
-    needs: Assemble
+    needs: Consolidate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

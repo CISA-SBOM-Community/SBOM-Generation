@@ -54,7 +54,7 @@ jobs:
 
   Augment:
     runs-on: ubuntu-latest
-    needs: Keycloak
+    needs: Create
     steps:
 
       - uses: actions/checkout@v4
@@ -71,7 +71,7 @@ jobs:
 
   Enrich:
     runs-on: ubuntu-latest
-    needs: Keycloak
+    needs: Create
     steps:
 
       - uses: actions/checkout@v4
@@ -97,7 +97,7 @@ jobs:
         uses: actions/download-artifact@v4
 
   Validate:
-    needs: Assemble
+    needs: Consolidate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
