@@ -2,18 +2,18 @@ direction: right
 
 title: |md
 
-  # SBOM Life Cycle
+  # SBOM Producer Life Cycle
 
 | {near: top-center}
 
-Generation {
-  Creation
+Authoring {
+  Generation
   Augmentation
   Enrichment
   Signing
 }
 
-Collaboration {
+Transportation {
 
 }
 
@@ -21,7 +21,7 @@ Analysis {
 
 }
 
-Generation.Creation -> Generation.Augmentation
-Generation.Augmentation -> Generation.Enrichment
-Generation.Enrichment -> Generation.Signing
-Generation.Signing -> Collaboration -> Analysis
+Authoring.Generation -> Authoring.Augmentation
+Authoring.Augmentation -> Authoring.Enrichment
+Authoring.Enrichment -> Authoring.Signing
+Authoring.Signing -> Transportation -> Analysis
