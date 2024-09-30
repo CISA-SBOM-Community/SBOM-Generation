@@ -12,12 +12,11 @@ This workflow illustrates creation of SPDX and CycloneDX SBOMs for a java applic
 
 ![SBOM Lifecycle](../../assets/lifecycle.svg)
 
-
 - `Generate SBOM with Trivy` Job
   - __Tool__
     - [trivy](https://github.com/aquasecurity/trivy)
   - __Notes__
-    - Analyize the keycload source code using [trivy](https://github.com/aquasecurity/trivy). There are several great open source sbom generation tools, and this could easily be repleased with a tool of your choice.
+    - Analyze the keycloak source code using [trivy](https://github.com/aquasecurity/trivy). There are several great open source sbom generation tools, and this could easily be repleased with a tool of your choice.
 - `Augment Keycloak SPDX` and `Augment Keycloak CycloneDX` Jobs
   - __Tool__
     - [sbomasm](https://github.com/interlynk-io/sbomasm)
@@ -30,5 +29,5 @@ This workflow illustrates creation of SPDX and CycloneDX SBOMs for a java applic
   - __Notes__
     - SBOM generation tools usually find components and their dependencies by analyzing package manager configuration files. This _usually_ does not provide enough information to meet NTIA minimum elements, and tools like [parlay](https://github.com/snyk/parlay) can enrich components in an SBOM by looking up additional component metadata from external databases.
 - `Display SBOM quality score through sbomqs` Job
-  - __Tools__
+  - __Tool__
     - [sbomqs](https://github.com/interlynk-io/sbomqs)
