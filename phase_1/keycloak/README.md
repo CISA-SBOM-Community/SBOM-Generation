@@ -1,6 +1,6 @@
 # Keycloak (Java) SBOM Generation
 
-This workflow illustrates creation of SPDX and CycloneDX SBOMs for a java application. [Keycloak](https://github.com/keycloak/keycloak) due to its wide use and complexity. The workflow is well commented and can be used as a reference implementation for your own projects.
+This workflow illustrates creation of SPDX and CycloneDX SBOMs for a java application. [Keycloak](https://github.com/keycloak/keycloak) is used as an example due to its wide use and complexity. The workflow is well commented and can be used as a reference implementation for your own projects.
 
 - [.github/workflows/phase_1_keycloak.yml](../../.github/workflows/phase_1_keycloak.yml)
 
