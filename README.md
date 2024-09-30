@@ -1,110 +1,346 @@
-# SBOM Generation Reference Implementations
+# Parlay
 
-## Why This Matters
+[![CI](https://github.com/snyk/parlay/actions/workflows/ci.yml/badge.svg)](https://github.com/snyk/parlay/actions/workflows/ci.yml)
+[![Security](https://github.com/snyk/parlay/actions/workflows/security.yml/badge.svg)](https://github.com/snyk/parlay/actions/workflows/security.yml)
 
-Creating high-quality Software Bills of Materials (SBOMs) is crucial for software transparency and security. However, the current landscape lacks a "golden path" for consistent SBOM generation. This project aims to bridge that gap by providing reference implementations that adheres to our [SBOM Lifecycle](https://github.com/CISA-SBOM-Community/SBOM-Generation/blob/main/SBOM_LIFECYCLE.md).
+## Enriching SBOMs
 
-## Meeting
+`parlay` will take a CycloneDX (JSON, XML) or SPDX 2.3 (JSON) document and enrich it with information taken from external services. At present this includes:
 
-Tuesdays @ 10am Eastern / 7am Pacific
+* [ecosyste.ms](https://ecosyste.ms)
+* [Snyk](https://snyk.io)
+* [OpenSSF Scorecard](https://securityscorecards.dev/)
 
-- [Teams Meeting Link](https://gov.teams.microsoft.us/l/meetup-join/19%3agcch%3ameeting_1fa6f7bb9186450fa64a2f0c0c497131%40thread.v2/0?context=%7b%22Tid%22%3a%22b18f006c-b0fc-467d-b23a-a35b5695b5dc%22%2c%22Oid%22%3a%226bb34de0-3fc5-496b-bf75-8faac6ae6e1a%22%7d)
-- [Meeting Notes](https://docs.google.com/document/d/1ZWDFWVd5XStE2iOX041Q-uB0VdHXUnIB0YyAnIRSs5s/edit)
+By enrich, we mean add additional information. You put in an SBOM, and you get a richer SBOM back. In many cases SBOMs have a minimum of information, often just the name and version of a given package. By enriching that with additional information we can make better decisions about the packages we're using.
 
-## Goals
+## Enriching with ecosyste.ms
 
-This project will create example pipelines/workflows in GitHub and GitLab demonstrating how to generate quality SBOMs for various software types:
+Let's take a simple CycloneDX SBOM of a Javascript application. Using `parlay` we enrich it using data from [ecosyste.ms](https://ecosyste.ms), adding information about the package license, external links, the maintainer and more.
 
-### SBOM Type
+```
+$ cat testing/sbom.cyclonedx.json
+...
+{
+	"bom-ref": "68-subtext@6.0.12",
+	"type": "library",
+	"name": "subtext",
+	"version": "6.0.12",
+	"purl": "pkg:npm/subtext@6.0.12"
+}
+...
+$ cat testing/sbom.cyclonedx.json | parlay ecosystems enrich - | jq
+...
+{
+	"bom-ref": "68-subtext@6.0.12",
+	"type": "library",
+	"supplier": {
+		"name": "hapi.js",
+		"url": [
+			"https://hapi.dev"
+		]
+	},
+	"author": "hapi.js",
+	"name": "subtext",
+	"version": "6.0.12",
+	"description": "HTTP payload parsing",
+	"licenses": [
+		{
+			"expression": "BSD-3-Clause"
+		}
+	],
+	"purl": "pkg:npm/subtext@6.0.12",
+	"externalReferences": [
+		{
+			"url": "https://github.com/hapijs/subtext",
+			"type": "website"
+		},
+		{
+			"url": "https://www.npmjs.com/package/subtext",
+			"type": "distribution"
+		},
+		{
+			"url": "https://github.com/hapijs/subtext",
+			"type": "vcs"
+		}
+	],
+	"properties": [
+		{
+			"name": "ecosystems:first_release_published_at",
+			"value": "2014-09-29T01:56:03Z"
+		},
+		{
+			"name": "ecosystems:latest_release_published_at",
+			"value": "2019-01-31T19:36:58Z"
+		}
+	]
+}
+...
+```
 
-This activity only covers [SBOMs of Type Source or Build](https://www.cisa.gov/sites/default/files/2023-04/sbom-types-document-508c.pdf) as SBOMs of other types are typically not curated by the maintainers of Open Source software but instead by consumers of Open Source software. For Source and Build SBOMs, the contents of the SBOM describing the artifact will only include what is being distributed and will not contain information about prospective uses of the software during or after installation or running of the software. That information is captured in separate SBOM types (ie Deployment, Runtime).
+What about with SPDX? Let's take an SBOM containing a list of packages like so:
 
-> In the context of this document, the “source” is defined as a snapshot of the source code made available to download, such as in a tgz archive.
-> The “build” is the artifacts that are built by the project and released. These could be tgz archives, but also other artifacts such as rpm, deb, or zip.
+```json
+{
+  "name": "concat-map",
+  "SPDXID": "SPDXRef-7-concat-map-0.0.1",
+  "versionInfo": "0.0.1",
+  "downloadLocation": "NOASSERTION",
+  "copyrightText": "NOASSERTION",
+  "externalRefs": [
+    {
+      "referenceCategory": "PACKAGE-MANAGER",
+      "referenceType": "purl",
+      "referenceLocator": "pkg:npm/concat-map@0.0.1"
+    }
+  ]
+}
+```
 
-### Phase 1
+Running `parlay ecosystems enrich <sbom.spdx.json>` will add additional information:
 
-- Java Application
-- Container Image with Python (Django) application
+```diff
+{
+  "name": "concat-map",
+  "SPDXID": "SPDXRef-7-concat-map-0.0.1",
+  "versionInfo": "0.0.1",
+  "downloadLocation": "NOASSERTION",
++  "homepage": "https://github.com/ljharb/concat-map",
++  "licenseConcluded": "MIT",
+  "copyrightText": "NOASSERTION",
++  "description": "concatenative mapdashery",
+  "externalRefs": [
+    {
+      "referenceCategory": "PACKAGE-MANAGER",
+      "referenceType": "purl",
+      "referenceLocator": "pkg:npm/concat-map@0.0.1"
+    }
+  ]
+```
 
-### Phase 2
+There are a few other utility commands for ecosyste.ms as well. The first returns raw JSON information about a specific package from ecosyste.ms:
 
-- Go Application
-- Container Image with Go application
+```
+parlay ecosystems package pkg:npm/snyk
+```
 
-__Stretch Goal__: Workflows for creating SBOMs with multiple dependency trees (SBOM nesting)
+You can also return raw JSON information about a specific repository:
 
-### Phase 3
+```
+parlay ecosystems repo https://github.com/open-policy-agent/conftest
+```
 
-- "Legacy" C or C++ Application
 
-These examples will function independently on public or private GitHub/GitLab instances and be reusable through GitLab CI/CD or GitHub Actions.
+## Enriching with Snyk
 
-## "Done" Definition
+`parlay` can also enrich an SBOM with Vulnerability information from Snyk.
 
-The project will be considered "done" when:
+It's important to note vulnerability data is moment-in-time information. By adding vulnerability information directly to the SBOM this makes the SBOM moment-in-time too.
 
-- Each application has a corresponding GitHub and GitLab project.
-- Workflows in these projects create SBOMs that:
-  - Meet and exceed NTIA Minimum Elements.
-  - Align with relevant Community Tiger Team whitepapers.
-    - [SBOM Sharing Primer](https://www.cisa.gov/sites/default/files/2024-05/SBOM%20Sharing%20Primer.pdf)
-    - [Framing Software Component Transparency Third Edition (DRAFT)](https://docs.google.com/document/d/1uddfhPqflTOeYK7ZJjS4gGa8pspwez6mhJUjTrvu4J4/edit?usp=sharing)
-  - Are stored following OpenSSF guidance (including examples for importing into tools like DependencyTrack).
-- A white paper documents:
-  - Hurdles encountered during development.
-  - Solutions implemented to achieve consistent messaging.
-  - Areas for future improvement.
+Note the Snyk commands require you to be a Snyk customer, and require passing a valid Snyk API token in the `SNYK_TOKEN` environment variable.
 
-### Deliverables
+The API base url can be set using the `SNYK_API` environment variable, and if missing it will default to `https://api.snyk.io/rest`.
 
-- Public GitHub projects for each application.
-- Public GitLab projects for each application.
-- White paper outlining project learnings and future directions.
+```
+parlay snyk enrich testing/sbom.cyclonedx.json
+```
 
-## In Scope
+Snyk will add a new [vulnerability](https://cyclonedx.org/docs/1.4/json/#vulnerabilities) attribute to the SBOM, for example:
 
-- Functioning GitHub Actions or GitLab CI/CD pipelines generating high-quality SBOMs.
-- SBOMs adhering to NTIA Minimum Elements and exceeding expectations.
-- SBOMs aligning with Community Tiger Team whitepaper recommendations.
-- Documentation of limitations due to immature tooling.
-- OpenSSF-compliant SBOM storage with import examples into other Open Source tools like DependencyTrack.
-- Open-source tooling within pipelines/workflows (commercially-owned open-source tools allowed).
-- Community feedback loop on generated SBOM completeness.
-- SBOM generation in multiple formats/tools (JSON preferred, minimum CDX 1.5, minimum SPDX 2.3).
-- Prioritization of Open Source and then Open Source with Commercial Backing tools.
-- Automation (write-once, repeatable workflows).
+```json
+"vulnerabilities": [
+  {
+    "bom-ref": "68-subtext@6.0.12",
+    "id": "SNYK-JS-SUBTEXT-467257",
+    "ratings": [
+      {
+        "source": {
+          "name": "Snyk",
+          "url": "https://security.snyk.io"
+        },
+        "score": 7.5,
+        "severity": "high",
+        "method": "CVSSv31",
+        "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      }
+    ],
+    "cwes": [
+      400
+    ],
+    "description": "Denial of Service (DoS)",
+    "detail": "...",
+    "advisories": [
+      {
+        "title": "GitHub Commit",
+        "url": "https://github.com/brave-intl/subtext/commit/9557c115b1384191a0d6e4a9ea028fedf8b44ae6"
+      },
+      {
+        "title": "GitHub Issue",
+        "url": "https://github.com/hapijs/subtext/issues/72"
+      },
+      {
+        "title": "NPM Security Advisory",
+        "url": "https://www.npmjs.com/advisories/1168"
+      }
+    ],
+    "created": "2019-09-19T10:25:11Z",
+    "updated": "2020-12-14T14:41:09Z"
+  }
+```
 
-## Out of Scope
+For SPDX, vulnerability informatio is added as additional `externalRefs`:
 
-- Non-open-source licensed tools.
-- Complex systems-of-systems.
-- A new open-source project to create GitHub Actions or GitLab Pipelines for others to consume.
-- Tool deployments requiring maintenance or cost.
-- SBOM signing (future Tiger Team initiative).
+```json
+{
+  "referenceCategory": "SECURITY",
+  "referenceType": "advisory",
+  "referenceLocator": "https://security.snyk.io/vuln/SNYK-JS-MINIMATCH-3050818",
+  "comment": "Regular Expression Denial of Service (ReDoS)"
+},
+{
+  "referenceCategory": "SECURITY",
+  "referenceType": "advisory",
+  "referenceLocator": "https://security.snyk.io/vuln/SNYK-JS-MINIMATCH-1019388",
+  "comment": "Regular Expression Denial of Service (ReDoS)"
+}
+```
 
-## Timeline
+Return raw JSON information about vulnerabilities in a specific package from Snyk:
 
-This project has an estimated end date of __January 14, 2025__, and has several intermediate due dates for each phase.
+```
+parlay snyk package pkg:npm/sqliter@1.0.1
+```
 
-- Phase 1 (duration 6 weeks)
-  - Expected completion __September 10, 2024__
-- Phase 2 (duration 6 weeks)
-  - Expected completion __October 22, 2024__
-- Phase 3 (duration 6 weeks)
-  - Expected completion __December 3, 2024__
-- White Paper Completion (duration 6 weeks)
-  - Expected completion __January 14, 2025__
+## Enriching with OpenSSF Scorecard
 
-## Contribution
+The [OpenSSF Scorecard project](https://securityscorecards.dev/) tests various aspects of a projects security posture and provides a score. `parlay` supports added a link to this data with the `parlay scorecard enrich` command.
 
-We welcome contributions from anyone in the community and especially individuals with:
 
-- DevSecOps experience (GitLab & GitHub platforms).
-- Open-source project experience (asynchronous collaboration).
+You can use this like so:
 
-Please read the [Contribution Guidance](CONTRIBUTING.md).
+```
+parlay scorecard enrich testing/sbom2.cyclonedx.json
+```
 
-## Join the Effort
+This will currently add an external reference to the [Scorecard API](https://api.securityscorecards.dev/) which can be used to retrieve the full scorecard.
 
-We invite you to participate in this effort to standardize SBOM creation. Stay tuned for further updates!
+```json
+{
+  "bom-ref": "103-org.springframework:spring-webmvc@5.3.3",
+  "type": "library",
+  "name": "org.springframework:spring-webmvc",
+  "version": "5.3.3",
+  "purl": "pkg:maven/org.springframework/spring-webmvc@5.3.3",
+  "externalReferences": [
+    {
+      "url": "https://api.securityscorecards.dev/projects/github.com/spring-projects/spring-framework",
+      "comment": "OpenSSF Scorecard",
+      "type": "other"
+    }
+  ]
+},
+```
+
+We're currently looking at the best way of encoding some of the scorecard data in the SBOM itself as well.
+
+
+## What about enriching with other data sources?
+
+There are lots of other sources of package data, and it would be great to add support for them in `parlay`. Please open issues and PRs with ideas.
+
+
+## Pipes!
+
+`parlay` is a fan of stdin and stdout. You can pipe SBOMs from other tools into `parlay`, and pipe between the separate `enrich` commands too.
+
+Maybe you want to enrich an SBOM with both ecosyste.ms and Snyk data:
+
+```
+cat testing/sbom.cyclonedx.json | ./parlay e enrich - | ./parlay s enrich - | jq
+```
+
+Maybe you want to take the output from Syft and add vulnerabilitity data?
+
+```
+syft -o cyclonedx-json nginx | parlay s enrich - | jq
+```
+
+Maybe you want to geneate an SBOM with `cdxgen`, enrich that with extra information, and test that with `bomber`:
+
+```
+cdxgen -o | parlay e enrich -  | bomber scan --provider snyk -
+```
+
+The ecosyste.ms enrichment adds license information, which Bomber then surfaces:
+
+```
+■ Ecosystems detected: gem
+■ Scanning 18 packages for vulnerabilities...
+■ Vulnerability Provider: Snyk (https://security.snyk.io)
+
+■ Files Scanned
+        - (sha256:701770b2317ea8cbd03aa398ecb6a0381c85beaf24d46c45665b53331816e360)
+
+■ Licenses Found: MIT, Apache-2.0, BSD-3-Clause, Ruby
+```
+
+
+## Installation
+
+`parlay` binaries are available from [GitHub Releases](https://github.com/snyk/parlay/releases). Just select the archive for your operating system and architecture. For instance, you could download for macOS ARM machines with the following, substituting `{version}` for the latest version number, for instance `0.1.4`.
+
+```
+wget https://github.com/snyk/parlay/releases/download/v{version}/parlay_Darwin_arm64.tar.gz
+tar -xvf parlay_Darwin_arm64.tar.gz
+```
+
+
+## Supported package types
+
+The various services used to enrich the SBOM data have data for a subset of purl types:
+
+### Ecosystems
+
+* `apk`
+* `cargo`
+* `cocoapods`
+* `composer`
+* `gem`
+* `golang`
+* `hex`
+* `maven`
+* `npm`
+* `nuget`
+* `pypi`
+
+### Snyk
+
+* `apk`
+* `cargo`
+* `cocoapods`
+* `composer`
+* `deb`
+* `gem`
+* `golang`
+* `hex`
+* `maven`
+* `npm`
+* `nuget`
+* `pypi`
+* `rpm`
+* `swift`
+
+### OpenSSF Scorecard
+
+* `apk`
+* `cargo`
+* `cocoapods`
+* `composer`
+* `gem`
+* `golang`
+* `hex`
+* `maven`
+* `npm`
+* `nuget`
+* `pypi`
+
+Note that Scorecard data is available only for a subset of projects from supported Git repositories. See the [Scorecard project](https://github.com/ossf/scorecard) for more information.
