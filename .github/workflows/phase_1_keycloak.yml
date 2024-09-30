@@ -31,7 +31,7 @@ jobs:
           /tmp/trivy fs \
             --timeout 30m0s \
             --parallel 4 \
-            --skip-update \
+            --skip-db-update \
             --offline-scan \
             --format cyclonedx \
             --output /tmp/generated-keycloak-sbom.cdx.json \
