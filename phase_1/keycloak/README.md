@@ -16,7 +16,7 @@ This workflow illustrates creation of SPDX and CycloneDX SBOMs for a java applic
   - __Tool__
     - [trivy](https://github.com/aquasecurity/trivy)
   - __Notes__
-    - Analyze the keycloak source code using [trivy](https://github.com/aquasecurity/trivy). There are several great open source sbom generation tools, and this could easily be repleased with a tool of your choice.
+    - Analyze the keycloak source code using [trivy](https://github.com/aquasecurity/trivy). There are several great open source sbom generation tools, and this could easily be replaced with a tool of your choice.
 - `Augment Keycloak SPDX` and `Augment Keycloak CycloneDX` Jobs
   - __Tool__
     - [sbomasm](https://github.com/interlynk-io/sbomasm)
