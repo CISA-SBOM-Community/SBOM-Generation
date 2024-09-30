@@ -30,7 +30,7 @@ jobs:
         run: |
           /tmp/trivy fs \
             --timeout 30m0s \
-            --parallel 4 \
+            --parallel 0 \
             --skip-db-update \
             --offline-scan \
             --format cyclonedx \
@@ -39,7 +39,7 @@ jobs:
 
           /tmp/trivy fs \
             --timeout 30m0s \
-            --parallel 4 \
+            --parallel 0 \
             --skip-update \
             --offline-scan \
             --format spdx-json \
