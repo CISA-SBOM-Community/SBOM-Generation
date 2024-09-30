@@ -142,12 +142,12 @@ jobs:
 
       - name: Enrich Keycloak CycloneDX
         run: |
-          parlay ecosystems enrich \
+          /tmp/parlay ecosystems enrich \
             augmented-keycloak-sbom-cyclonedx/augmented_keycloak-sbom.cdx.json > /tmp/enriched_keycloak-sbom.cdx.json
 
       - name: Enrich Keycloak SPDX
         run: |
-          parlay ecosystems enrich \
+          /tmp/parlay ecosystems enrich \
             augmented-keycloak-sbom-spdx/augmented_keycloak-sbom.spdx.json > /tmp/enriched_keycloak-sbom.spdx.json
 
       - name: Upload Enriched SPDX SBOM
