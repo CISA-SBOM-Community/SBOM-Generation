@@ -31,8 +31,6 @@ jobs:
           /tmp/trivy fs \
             --timeout 30m0s \
             --parallel 0 \
-            --skip-db-update \
-            --offline-scan \
             --format cyclonedx \
             --output /tmp/generated-keycloak-sbom.cdx.json \
             keycloak-${KEYCLOAK_TAG}
@@ -40,8 +38,6 @@ jobs:
           /tmp/trivy fs \
             --timeout 30m0s \
             --parallel 0 \
-            --skip-update \
-            --offline-scan \
             --format spdx-json \
             --output /tmp/generated-keycloak-sbom.spdx.json \
             keycloak-${KEYCLOAK_TAG}
@@ -79,7 +75,6 @@ jobs:
           /tmp/sbomasm edit --subject Document \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
-              --lifecycle 'build' \
               --repository 'https://github.com/keycloak/keycloak' \
               --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
               generated-keycloak-sbom-spdx/generated-keycloak-sbom.spdx.json > augmented_keycloak-sbom.spdx.json
@@ -88,7 +83,6 @@ jobs:
           /tmp/sbomasm edit --subject primary-component \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
-              --lifecycle 'build' \
               --repository 'https://github.com/keycloak/keycloak' \
               --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
               augmented_keycloak-sbom.spdx.json > /tmp/augmented_keycloak-sbom.spdx.json
@@ -99,7 +93,7 @@ jobs:
           /tmp/sbomasm edit --subject Document \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
-              --lifecycle 'build' \
+              --lifecycle 'pre-build' \
               --repository 'https://github.com/keycloak/keycloak' \
               --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
               generated-keycloak-sbom-cyclonedx/generated-keycloak-sbom.cdx.json > augmented_keycloak-sbom.cdx.json
@@ -108,7 +102,6 @@ jobs:
           /tmp/sbomasm edit --subject primary-component \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
-              --lifecycle 'build' \
               --repository 'https://github.com/keycloak/keycloak' \
               --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
               augmented_keycloak-sbom.cdx.json > /tmp/augmented_keycloak-sbom.cdx.json
