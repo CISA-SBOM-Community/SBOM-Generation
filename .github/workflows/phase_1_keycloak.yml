@@ -180,7 +180,7 @@ jobs:
       - name: "Display SBOM quality score through sbomqs"
         run: |
           echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
-          for SBOM in $(find . -iname *.json); do
+          for SBOM in $(find . -iname enriched*.json); do
             /tmp/sbomqs score "$SBOM" >> ${GITHUB_STEP_SUMMARY}
           done
           echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
