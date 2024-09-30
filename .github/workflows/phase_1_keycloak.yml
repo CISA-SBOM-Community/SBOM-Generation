@@ -3,13 +3,14 @@ name: Phase 1 - Keycloak
 on: [push]
 
 env:
-  TRIVY_VERSION: 0.54.1
   KEYCLOAK_TAG: 25.0.4
+  PARLAY_VERSION: 0.5.1
   SBOMASM_VERSION: 0.1.5
   SBOMQS_VERSION: 0.1.9
+  TRIVY_VERSION: 0.54.1
 
 jobs:
-  Keycloak:
+  Generate:
     runs-on: ubuntu-latest
     steps:
       - name: Install Trivy
@@ -30,6 +31,8 @@ jobs:
           /tmp/trivy fs \
             --timeout 30m0s \
             --parallel 4 \
+            --skip-update \
+            --offline-scan \
             --format cyclonedx \
             --output /tmp/generated-keycloak-sbom.cdx.json \
             keycloak-${KEYCLOAK_TAG}
@@ -37,6 +40,8 @@ jobs:
           /tmp/trivy fs \
             --timeout 30m0s \
             --parallel 4 \
+            --skip-update \
+            --offline-scan \
             --format spdx-json \
             --output /tmp/generated-keycloak-sbom.spdx.json \
             keycloak-${KEYCLOAK_TAG}
@@ -54,7 +59,7 @@ jobs:
           path: "/tmp/generated-keycloak-sbom.spdx.json"
   Augment:
     runs-on: ubuntu-latest
-    needs: Keycloak
+    needs: Generate
     steps:
 
       - uses: actions/checkout@v4
@@ -130,25 +135,35 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
 
+      - name: Install parlay
+        run: |
+          curl -Ls https://github.com/snyk/parlay/releases/download/v${PARLAY_VERSION}/parlay_Linux_x86_64.tar.gz | tar xvz - -C /tmp
+          chmod +x /tmp/parlay
+
       - name: Enrich Keycloak CycloneDX
         run: |
-          echo "Enrichment of CycloneDX not supported."
+          parlay ecosystems enrich \
+            augmented-keycloak-sbom-cyclonedx/augmented_keycloak-sbom.cdx.json > /tmp/enriched_keycloak-sbom.cdx.json
 
       - name: Enrich Keycloak SPDX
         run: |
-          echo "Enrichment of SPDX not supported."
+          parlay ecosystems enrich \
+            augmented-keycloak-sbom-spdx/augmented_keycloak-sbom.spdx.json > /tmp/enriched_keycloak-sbom.spdx.json
 
-  Assemble:
-    runs-on: ubuntu-latest
-    needs: Enrich
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
+      - name: Upload Enriched SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: enriched-keycloak-sbom-spdx
+          path: "/tmp/enriched_keycloak-sbom.spdx.json"
+    
+      - name: Upload Enriched CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: enriched-keycloak-sbom-cyclonedx
+          path: "/tmp/enriched_keycloak-sbom.cdx.json"
 
   Validate:
-    needs: Assemble
+    needs: Enrich
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

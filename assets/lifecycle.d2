@@ -1,0 +1,27 @@
+direction: right
+
+title: |md
+
+  # SBOM Producer Life Cycle
+
+| {near: top-center}
+
+Authoring {
+  Generation
+  Augmentation
+  Enrichment
+  Signing
+}
+
+Transportation {
+
+}
+
+Analysis {
+
+}
+
+Authoring.Generation -> Authoring.Augmentation
+Authoring.Augmentation -> Authoring.Enrichment
+Authoring.Enrichment -> Authoring.Signing
+Authoring.Signing -> Transportation -> Analysis

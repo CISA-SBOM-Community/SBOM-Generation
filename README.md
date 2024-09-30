@@ -2,7 +2,7 @@
 
 ## Why This Matters
 
-Creating high-quality Software Bills of Materials (SBOMs) is crucial for software transparency and security. However, the current landscape lacks a "golden path" for consistent SBOM generation. This project aims to bridge that gap by providing reference implementations.
+Creating high-quality Software Bills of Materials (SBOMs) is crucial for software transparency and security. However, the current landscape lacks a "golden path" for consistent SBOM generation. This project aims to bridge that gap by providing reference implementations that adheres to our [SBOM Lifecycle](https://github.com/CISA-SBOM-Community/SBOM-Generation/blob/main/SBOM_LIFECYCLE.md).
 
 ## Meeting
 
