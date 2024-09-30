@@ -5,6 +5,7 @@ on: [push]
 env:
   TRIVY_VERSION: 0.54.1
   KEYCLOAK_TAG: 25.0.4
+  SBOMASM_VERSION: 0.1.5
   SBOMQS_VERSION: 0.1.9
 
 jobs:
@@ -61,10 +62,16 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
 
+      - name: Install sbomasm
+        run: |
+          curl -L -o /tmp/sbomasm \
+            "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
+          chmod +x /tmp/sbomasm
+
       - name: Augment Keycloak SPDX
         run: |
           # Augment the Generated SPDX with updated document information
-          sbomasm edit --subject Document \
+          /tmp/sbomasm edit --subject Document \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
               --lifecycle 'build' \
@@ -73,7 +80,7 @@ jobs:
               generated-keycloak-sbom-spdx/generated-keycloak-sbom.spdx.json > augmented_keycloak-sbom.spdx.json
 
           # Augment the Generated SPDX with updated primary component information
-          sbomasm edit --subject primary-component \
+          /tmp/sbomasm edit --subject primary-component \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
               --lifecycle 'build' \
@@ -84,7 +91,7 @@ jobs:
       - name: Augment Keycloak CycloneDX
         run: |
           # Augment the Generated SPDX with updated document information
-          sbomasm edit --subject Document \
+          /tmp/sbomasm edit --subject Document \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
               --lifecycle 'build' \
@@ -93,7 +100,7 @@ jobs:
               generated-keycloak-sbom-cyclonedx/generated-keycloak-sbom.cdx.json > augmented_keycloak-sbom.cdx.json
 
           # Augment the Generated SPDX with updated primary component information
-          sbomasm edit --subject primary-component \
+          /tmp/sbomasm edit --subject primary-component \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
               --lifecycle 'build' \
