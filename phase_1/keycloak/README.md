@@ -21,7 +21,7 @@ This workflow illustrates creation of SPDX and CycloneDX SBOMs for a java applic
   - __Tool__
     - [sbomasm](https://github.com/interlynk-io/sbomasm)
   - __Notes__
-    - There is metadata that typically cannot be determined through analysis. This is metadata that needs to be determined by the author of the primary component and author of the SBOM document. Examples of this information are project description, sbom author, and supplier.
+    - There is metadata that typically cannot be determined through analysis. This is metadata that needs to be determined by the author of the primary component and author of the SBOM document. Examples of this information are project description, SBOM author, and supplier.
     - There are multiple ways to augment this metadata, you can use [jq](https://jqlang.github.io/jq/), write a custom application, or merge a static SBOM into a generated one.
 - `Enrich Keycloak SPDX` and `Enrich Keycloak CycloneDX` Jobs
   - __Tool__
