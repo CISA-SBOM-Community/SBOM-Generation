@@ -114,7 +114,7 @@ jobs:
             "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
           chmod +x /tmp/sbomasm
 
-      - name: Augment Container CycloneDX
+      - name: Augment Container CycloneDX - document
         run: |
           /tmp/sbomasm edit --append --subject Document \
             --author ${SBOM_AUTHOR} \
@@ -123,6 +123,8 @@ jobs:
             --license 'Apache-2.0' \
             container-sbom-cyclonedx/container-sbom.cdx.json > /tmp/augmented_container-sbom.cdx.tmp
 
+      - name: Augment Container CycloneDX - component
+        run: |
           /tmp/sbomasm edit --subject primary-component
             --name phase1-python-application \
             --author ${SBOM_AUTHOR} \
@@ -132,7 +134,7 @@ jobs:
             --license 'Apache-2.0' \
             /tmp/augmented_container-sbom.cdx.tmp > /tmp/augmented_container-sbom.cdx.json
 
-      - name: Augment Application CycloneDX
+      - name: Augment Application CycloneDX - document
         run: |
           /tmp/sbomasm edit --append --subject Document \
             --name phase1-python-application \
@@ -143,6 +145,8 @@ jobs:
             --license 'Apache-2.0' \
             application-sbom-cyclonedx/application-sbom.cdx.json > /tmp/augmented_application-sbom.cdx.tmp
 
+      - name: Augment Application CycloneDX - component
+        run: |
           /tmp/sbomasm edit --subject primary-component
             --name phase1-python-application \
             --author ${SBOM_AUTHOR} \
@@ -152,7 +156,7 @@ jobs:
             --license 'Apache-2.0' \
             /tmp/augmented_application-sbom.cdx.tmp >/tmp/augmented_application-sbom.cdx.json
 
-      - name: Augment Container SPDX
+      - name: Augment Container SPDX - document
         run: |
           /tmp/sbomasm edit --append --subject Document \
             --name phase1-python-application \
@@ -163,6 +167,8 @@ jobs:
             --license 'Apache-2.0' \
             container-sbom-spdx/container-sbom.spdx.json > /tmp/augmented_container-sbom.spdx.tmp
 
+      - name: Augment Container SPDX - component
+        run: |
           /tmp/sbomasm edit --subject primary-component
             --name phase1-python-application \
             --author ${SBOM_AUTHOR} \
@@ -172,7 +178,7 @@ jobs:
             --license 'Apache-2.0' \
             container-sbom-spdx/container-sbom.spdx.tmp > /tmp/augmented_container-sbom.spdx.json
 
-      - name: Augment Application SPDX
+      - name: Augment Application SPDX - document
         run: |
           /tmp/sbomasm edit --append --subject Document \
             --name phase1-python-application \
@@ -183,6 +189,8 @@ jobs:
             --license 'Apache-2.0' \
             application-sbom-spdx/application-sbom.spdx.json > /tmp/augmented_application-sbom.spdx.tmp
 
+      - name: Augment Application SPDX - component
+        run: |
           /tmp/sbomasm edit --subject primary-component
             --name phase1-python-application \
             --author ${SBOM_AUTHOR} \
