@@ -147,7 +147,7 @@ jobs:
             --author "$SBOM_AUTHOR" \
             --supplier "$SBOM_SUPPLIER" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
-            --lifecycle source \
+            --lifecycle pre-build \
             --license 'Apache-2.0' \
             application-sbom-cyclonedx/application-sbom.cdx.json > /tmp/augmented_application-sbom.cdx.tmp
 
@@ -170,7 +170,7 @@ jobs:
             --author "$SBOM_AUTHOR" \
             --supplier "$SBOM_SUPPLIER" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
-            --lifecycle source \
+            --lifecycle pre-build \
             --license 'Apache-2.0' \
             container-sbom-spdx/container-sbom.spdx.json > /tmp/augmented_container-sbom.spdx.tmp
 
@@ -193,7 +193,7 @@ jobs:
             --author "$SBOM_AUTHOR" \
             --supplier "$SBOM_SUPPLIER" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
-            --lifecycle source \
+            --lifecycle pre-build \
             --license 'Apache-2.0' \
             application-sbom-spdx/application-sbom.spdx.json > /tmp/augmented_application-sbom.spdx.tmp
 
@@ -250,53 +250,8 @@ jobs:
           name: enriched-sboms
           path: "/tmp/enriched_*.json"
 
-
-  Consolidate:
-    runs-on: ubuntu-latest
-    needs: [Enrich]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
-
-      #  TODO: Add SPDX
-
-      - name: Build top-level CDX SBOM
-        run: |
-          # Create destination folder
-          #mkdir /tmp/output
-
-          # Define metadata for parent template
-          #export TOP_LEVEL_UUID=$(uuidgen)
-          #export APPLICATION_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_application-sbom.cdx.json | awk {'print $1'})
-          #export CONTAINER_SBOM_SHA256=$(sha256sum enriched-sboms/enriched_container-sbom.cdx.json | awk {'print $1'})
-          #export CREATION_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S%z")
-          #export CONTAINER_BOM_REF=$(jq -r '.metadata.component["bom-ref"]' enriched-sboms/enriched_container-sbom.cdx.json)
-          #export APPLICATION_BOM_REF=$(jq -r '.metadata.component["bom-ref"]' enriched-sboms/enriched_application-sbom.cdx.json)
-
-          # We're using `envsubst` here to populate the metadata
-          # template from environment variables
-          #cat "phase_1/Python/sbom/top-level.cdx.json.tmpl" | jq | \
-          #  envsubst > top-level-sbom.cdx.json.tmp
-
-          # Set GITHUB_RUN_NUMBER as the version of the SBOM
-          #jq '.version = (env.GITHUB_RUN_NUMBER | tonumber)' \
-          #  top-level-sbom.cdx.json.tmp  \
-          #  > /tmp/output/top-level-sbom.cdx.json
-
-          # Copy in enriched SBOMs
-          #cp enriched-sboms/enriched_*-sbom.cdx.json /tmp/output/
-
-      - name: Upload Top Level SBOMs
-        uses: actions/upload-artifact@v4
-        with:
-          name: top-level-sboms
-          path: /tmp/output/
-
-
   Validate:
-    needs: Consolidate
+    needs: Augment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
