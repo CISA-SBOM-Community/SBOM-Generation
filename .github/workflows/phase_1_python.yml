@@ -1,6 +1,10 @@
 ---
 name: Phase 1 - Python
-on: [push]
+on:
+  push:
+    paths:
+      - github/workflows/phase_1_python.yml
+      - 'phase_1/Python/**'
 
 env:
   PARLAY_VERSION: 0.5.1
