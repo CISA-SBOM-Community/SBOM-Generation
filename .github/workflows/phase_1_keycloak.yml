@@ -81,7 +81,6 @@ jobs:
 
           # Augment the Generated SPDX with updated primary component information
           /tmp/sbomasm edit --subject primary-component \
-              --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
               --repository 'https://github.com/keycloak/keycloak' \
               --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
@@ -89,7 +88,7 @@ jobs:
 
       - name: Augment Keycloak CycloneDX
         run: |
-          # Augment the Generated SPDX with updated document information
+          # Augment the Generated CycloneDX with updated document information
           /tmp/sbomasm edit --subject Document \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
@@ -98,7 +97,7 @@ jobs:
               --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
               generated-keycloak-sbom-cyclonedx/generated-keycloak-sbom.cdx.json > augmented_keycloak-sbom.cdx.json
 
-          # Augment the Generated SPDX with updated primary component information
+          # Augment the Generated CycloneDX with updated primary component information
           /tmp/sbomasm edit --subject primary-component \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
