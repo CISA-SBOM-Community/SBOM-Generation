@@ -185,7 +185,7 @@ jobs:
             --version "$GITHUB_SHA" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --license 'Apache-2.0' \
-            /tmp/container-sbom-spdx/container-sbom.spdx.tmp > /tmp/augmented_container-sbom.spdx.json
+            /tmp/augmented_container-sbom.spdx.tmp > /tmp/augmented_container-sbom.spdx.json
 
       - name: Augment Application SPDX - document
         run: |
