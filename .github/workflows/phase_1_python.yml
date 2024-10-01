@@ -37,11 +37,13 @@ jobs:
         run: |
           /tmp/trivy image \
             --format cyclonedx \
+            --pkg-types os \
             --output /tmp/container-sbom.cdx.json \
             phase-1-python
 
           /tmp/trivy image \
             --format spdx-json \
+            --pkg-types os \
             --output /tmp/container-sbom.spdx.json \
             phase-1-python
 
@@ -116,30 +118,33 @@ jobs:
 
       - name: Augment Container CycloneDX - document
         run: |
-          /tmp/sbomasm edit --subject Document \
-            --author ${SBOM_AUTHOR} \
-            --supplier ${SBOM_SUPPLIER} \
+          /tmp/sbomasm edit \
+            --subject Document \
+            --author "$SBOM_AUTHOR" \
+            --supplier "$SBOM_SUPPLIER" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --license 'Apache-2.0' \
             container-sbom-cyclonedx/container-sbom.cdx.json > /tmp/augmented_container-sbom.cdx.tmp
 
       - name: Augment Container CycloneDX - component
         run: |
-          /tmp/sbomasm edit --subject primary-component \
+          /tmp/sbomasm edit \
+            --subject primary-component \
             --name phase1-python-application \
-            --author ${SBOM_AUTHOR} \
-            --supplier ${SBOM_SUPPLIER} \
-            --version ${GITHUB_SHA} \
+            --author "$SBOM_AUTHOR" \
+            --supplier "$SBOM_SUPPLIER" \
+            --version "$GITHUB_SHA" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --license 'Apache-2.0' \
             /tmp/augmented_container-sbom.cdx.tmp > /tmp/augmented_container-sbom.cdx.json
 
       - name: Augment Application CycloneDX - document
         run: |
-          /tmp/sbomasm edit --subject Document \
+          /tmp/sbomasm edit \
+            --subject Document \
             --name phase1-python-application \
-            --author ${SBOM_AUTHOR} \
-            --supplier ${SBOM_SUPPLIER} \
+            --author "$SBOM_AUTHOR" \
+            --supplier "$SBOM_SUPPLIER" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --lifecycle source \
             --license 'Apache-2.0' \
@@ -147,21 +152,24 @@ jobs:
 
       - name: Augment Application CycloneDX - component
         run: |
-          /tmp/sbomasm edit --subject primary-component \
+          /tmp/sbomasm edit \
+            --subject primary-component \
             --name phase1-python-application \
-            --author ${SBOM_AUTHOR} \
-            --supplier ${SBOM_SUPPLIER} \
-            --version ${GITHUB_SHA} \
+            --author "$SBOM_AUTHOR" \
+            --supplier "$SBOM_SUPPLIER" \
+            --version "$GITHUB_SHA" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --license 'Apache-2.0' \
             /tmp/augmented_application-sbom.cdx.tmp >/tmp/augmented_application-sbom.cdx.json
 
       - name: Augment Container SPDX - document
         run: |
-          /tmp/sbomasm edit --append --subject Document \
+          /tmp/sbomasm edit \
+            --append \
+            --subject Document \
             --name phase1-python-application \
-            --author ${SBOM_AUTHOR} \
-            --supplier ${SBOM_SUPPLIER} \
+            --author "$SBOM_AUTHOR" \
+            --supplier "$SBOM_SUPPLIER" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --lifecycle source \
             --license 'Apache-2.0' \
@@ -169,9 +177,10 @@ jobs:
 
       - name: Augment Container SPDX - component
         run: |
-          /tmp/sbomasm edit --subject primary-component \
+          /tmp/sbomasm edit \
+            --subject primary-component \
             --name phase1-python-application \
-            --author ${SBOM_AUTHOR} \
+            --author "$SBOM_AUTHOR" \
             --supplier ${SBOM_SUPPLIER} \
             --version ${GITHUB_SHA} \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
@@ -180,10 +189,12 @@ jobs:
 
       - name: Augment Application SPDX - document
         run: |
-          /tmp/sbomasm edit --append --subject Document \
+          /tmp/sbomasm edit \
+            --append \
+            --subject Document \
             --name phase1-python-application \
-            --author ${SBOM_AUTHOR} \
-            --supplier ${SBOM_SUPPLIER} \
+            --author "$SBOM_AUTHOR" \
+            --supplier "$SBOM_SUPPLIER" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --lifecycle source \
             --license 'Apache-2.0' \
@@ -191,11 +202,12 @@ jobs:
 
       - name: Augment Application SPDX - component
         run: |
-          /tmp/sbomasm edit --subject primary-component \
+          /tmp/sbomasm edit \
+            --subject primary-component \
             --name phase1-python-application \
-            --author ${SBOM_AUTHOR} \
-            --supplier ${SBOM_SUPPLIER} \
-            --version ${GITHUB_SHA} \
+            --author "$SBOM_AUTHOR" \
+            --supplier "$SBOM_SUPPLIER" \
+            --version "$GITHUB_SHA" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --license 'Apache-2.0' \
             /tmp/augmented_application-sbom.spdx.tmp > /tmp/enriched_application-sbom.spdx.json
