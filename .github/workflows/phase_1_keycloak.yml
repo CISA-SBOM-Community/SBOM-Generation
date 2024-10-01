@@ -3,9 +3,11 @@ name: Phase 1 - Keycloak
 on: [push]
 
 env:
-  TRIVY_VERSION: 0.54.1
   KEYCLOAK_TAG: 25.0.4
+  PARLAY_VERSION: 0.5.1
+  SBOMASM_VERSION: 0.1.5
   SBOMQS_VERSION: 0.1.9
+  TRIVY_VERSION: 0.54.1
 
 jobs:
   Generate:
@@ -27,31 +29,34 @@ jobs:
       - name: Generate SBOM with Trivy
         run: |
           /tmp/trivy fs \
-            --timeout 20m0s \
+            --timeout 30m0s \
             --parallel 0 \
             --format cyclonedx \
-            --output /tmp/keycloak-sbom.cdx.json \
+            --skip-db-update \
+            --offline-scan \
+            --output /tmp/generated-keycloak-sbom.cdx.json \
             keycloak-${KEYCLOAK_TAG}
 
           /tmp/trivy fs \
-            --timeout 20m0s \
+            --timeout 30m0s \
             --parallel 0 \
             --format spdx-json \
-            --output /tmp/keycloak-sbom.spdx.json \
+            --skip-db-update \
+            --offline-scan \
+            --output /tmp/generated-keycloak-sbom.spdx.json \
             keycloak-${KEYCLOAK_TAG}
 
-      - name: Upload CycloneDX SBOM
+      - name: Upload Generated CycloneDX SBOM
         uses: actions/upload-artifact@v4
         with:
-          name: keycloak-sbom-cyclonedx
-          path: "/tmp/keycloak-sbom.cdx.json"
+          name: generated-keycloak-sbom-cyclonedx
+          path: "/tmp/generated-keycloak-sbom.cdx.json"
 
-      - name: Upload SPDX SBOM
+      - name: Upload Generated SPDX SBOM
         uses: actions/upload-artifact@v4
         with:
-          name: keycloak-sbom-spdx
-          path: "/tmp/keycloak-sbom.spdx.json"
-
+          name: generated-keycloak-sbom-spdx
+          path: "/tmp/generated-keycloak-sbom.spdx.json"
   Augment:
     runs-on: ubuntu-latest
     needs: Generate
@@ -62,42 +67,118 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
 
-      - name: Augment Keycloak CycloneDX
+      - name: Install sbomasm
         run: |
-          echo "Augment of CycloneDX not supported."
+          curl -L -o /tmp/sbomasm \
+            "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
+          chmod +x /tmp/sbomasm
+
       - name: Augment Keycloak SPDX
         run: |
-          echo "Augment of SPDX not supported."
+          # Augment the Generated SPDX with updated document information
+          #   - Using `--append` option to ensure the author information is appended instead
+          #     of replacing the tool information.
+          /tmp/sbomasm edit --append --subject Document \
+              --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
+              --supplier 'keycloak (https://www.keycloak.org/)' \
+              --repository 'https://github.com/keycloak/keycloak' \
+              --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
+              generated-keycloak-sbom-spdx/generated-keycloak-sbom.spdx.json > augmented_keycloak-sbom.spdx.json
+
+          # Augment the Generated SPDX with updated primary component information
+          /tmp/sbomasm edit --subject primary-component \
+              --supplier 'keycloak (https://www.keycloak.org/)' \
+              --repository 'https://github.com/keycloak/keycloak' \
+              --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
+              augmented_keycloak-sbom.spdx.json > /tmp/augmented_keycloak-sbom.spdx.json
+
+      - name: Augment Keycloak CycloneDX
+        run: |
+          # Augment the Generated CycloneDX with updated document information
+          /tmp/sbomasm edit --subject Document \
+              --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
+              --supplier 'keycloak (https://www.keycloak.org/)' \
+              --lifecycle 'pre-build' \
+              --repository 'https://github.com/keycloak/keycloak' \
+              --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
+              generated-keycloak-sbom-cyclonedx/generated-keycloak-sbom.cdx.json > augmented_keycloak-sbom.cdx.json
+
+          # Augment the Generated CycloneDX with updated primary component information
+          /tmp/sbomasm edit --subject primary-component \
+              --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
+              --supplier 'keycloak (https://www.keycloak.org/)' \
+              --repository 'https://github.com/keycloak/keycloak' \
+              --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
+              augmented_keycloak-sbom.cdx.json > /tmp/augmented_keycloak-sbom.cdx.json
+      
+      - name: Upload Augmented SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: augmented-keycloak-sbom-spdx
+          path: "/tmp/augmented_keycloak-sbom.spdx.json"
+
+      - name: Upload Augmented CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: augmented-keycloak-sbom-cyclonedx
+          path: "/tmp/augmented_keycloak-sbom.cdx.json"
 
   Enrich:
     runs-on: ubuntu-latest
-    needs: Generate
+    needs: Augment
     steps:
 
       - uses: actions/checkout@v4
 
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
+
+      - name: Install parlay
+        run: |
+          curl -Ls https://github.com/snyk/parlay/releases/download/v${PARLAY_VERSION}/parlay_Linux_x86_64.tar.gz | tar xvz -C /tmp
+          chmod +x /tmp/parlay
 
       - name: Enrich Keycloak CycloneDX
         run: |
-          echo "Enrichment of CycloneDX not supported."
+          /tmp/parlay ecosystems enrich \
+            augmented-keycloak-sbom-cyclonedx/augmented_keycloak-sbom.cdx.json > /tmp/enriched_keycloak-sbom.cdx.json
 
       - name: Enrich Keycloak SPDX
         run: |
-          echo "Enrichment of SPDX not supported."
+          /tmp/parlay ecosystems enrich \
+            augmented-keycloak-sbom-spdx/augmented_keycloak-sbom.spdx.json > /tmp/enriched_keycloak-sbom.spdx.json
 
-  Consolidate:
-    runs-on: ubuntu-latest
-    needs: Enrich
-    steps:
-      - uses: actions/checkout@v4
+      - name: Upload Enriched SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: enriched-keycloak-sbom-spdx
+          path: "/tmp/enriched_keycloak-sbom.spdx.json"
+    
+      - name: Upload Enriched CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: enriched-keycloak-sbom-cyclonedx
+          path: "/tmp/enriched_keycloak-sbom.cdx.json"
 
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
+      - name: Save Final SBOMs
+        run: |
+          cp /tmp/enriched_keycloak-sbom.spdx.json /tmp/final_keycloak-sbom.spdx.json
+          cp /tmp/enriched_keycloak-sbom.cdx.json /tmp/final_keycloak-sbom.cdx.json
+
+      - name: Upload Final SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-keycloak-sbom-spdx
+          path: "/tmp/final_keycloak-sbom.spdx.json"
+
+      - name: Upload Final CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-keycloak-sbom-cyclonedx
+          path: "/tmp/final_keycloak-sbom.cdx.json"
 
   Validate:
-    needs: Consolidate
+    needs: Enrich
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -114,7 +195,7 @@ jobs:
       - name: "Display SBOM quality score through sbomqs"
         run: |
           echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
-          for SBOM in $(find . -iname *.json); do
+          for SBOM in $(find . -iname final*.json); do
             /tmp/sbomqs score "$SBOM" >> ${GITHUB_STEP_SUMMARY}
           done
           echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
