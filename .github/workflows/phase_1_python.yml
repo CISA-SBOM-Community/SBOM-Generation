@@ -116,7 +116,7 @@ jobs:
 
       - name: Augment Container CycloneDX - document
         run: |
-          /tmp/sbomasm edit --append --subject Document \
+          /tmp/sbomasm edit --subject Document \
             --author ${SBOM_AUTHOR} \
             --supplier ${SBOM_SUPPLIER} \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
@@ -125,7 +125,7 @@ jobs:
 
       - name: Augment Container CycloneDX - component
         run: |
-          /tmp/sbomasm edit --subject primary-component
+          /tmp/sbomasm edit --subject primary-component \
             --name phase1-python-application \
             --author ${SBOM_AUTHOR} \
             --supplier ${SBOM_SUPPLIER} \
@@ -136,7 +136,7 @@ jobs:
 
       - name: Augment Application CycloneDX - document
         run: |
-          /tmp/sbomasm edit --append --subject Document \
+          /tmp/sbomasm edit --subject Document \
             --name phase1-python-application \
             --author ${SBOM_AUTHOR} \
             --supplier ${SBOM_SUPPLIER} \
@@ -147,7 +147,7 @@ jobs:
 
       - name: Augment Application CycloneDX - component
         run: |
-          /tmp/sbomasm edit --subject primary-component
+          /tmp/sbomasm edit --subject primary-component \
             --name phase1-python-application \
             --author ${SBOM_AUTHOR} \
             --supplier ${SBOM_SUPPLIER} \
@@ -169,7 +169,7 @@ jobs:
 
       - name: Augment Container SPDX - component
         run: |
-          /tmp/sbomasm edit --subject primary-component
+          /tmp/sbomasm edit --subject primary-component \
             --name phase1-python-application \
             --author ${SBOM_AUTHOR} \
             --supplier ${SBOM_SUPPLIER} \
@@ -191,7 +191,7 @@ jobs:
 
       - name: Augment Application SPDX - component
         run: |
-          /tmp/sbomasm edit --subject primary-component
+          /tmp/sbomasm edit --subject primary-component \
             --name phase1-python-application \
             --author ${SBOM_AUTHOR} \
             --supplier ${SBOM_SUPPLIER} \
