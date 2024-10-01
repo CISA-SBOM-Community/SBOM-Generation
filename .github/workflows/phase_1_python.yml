@@ -251,7 +251,8 @@ jobs:
           path: "/tmp/enriched_*.json"
 
   Validate:
-    needs: Augment
+    name: "Validate SBOMs"
+    needs: Enrich
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
