@@ -72,7 +72,9 @@ jobs:
       - name: Augment Keycloak SPDX
         run: |
           # Augment the Generated SPDX with updated document information
-          /tmp/sbomasm edit --subject Document \
+          #   - Using `--append` option to ensure the author information is appended instead
+          #     of replacing the tool information.
+          /tmp/sbomasm edit --append --subject Document \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
               --supplier 'keycloak (https://www.keycloak.org/)' \
               --repository 'https://github.com/keycloak/keycloak' \
