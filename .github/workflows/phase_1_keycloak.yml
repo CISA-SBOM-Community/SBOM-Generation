@@ -156,6 +156,23 @@ jobs:
           name: enriched-keycloak-sbom-cyclonedx
           path: "/tmp/enriched_keycloak-sbom.cdx.json"
 
+      - name: Save Final SBOMs
+        run: |
+          cp /tmp/enriched_keycloak-sbom.spdx.json /tmp/final_keycloak-sbom.spdx.json
+          cp /tmp/enriched_keycloak-sbom.cdx.json /tmp/final_keycloak-sbom.cdx.json
+
+      - name: Upload Final SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-keycloak-sbom-spdx
+          path: "/tmp/final_keycloak-sbom.spdx.json"
+
+      - name: Upload Final CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-keycloak-sbom-cyclonedx
+          path: "/tmp/final_keycloak-sbom.cdx.json"
+
   Validate:
     needs: Enrich
     runs-on: ubuntu-latest
@@ -174,7 +191,7 @@ jobs:
       - name: "Display SBOM quality score through sbomqs"
         run: |
           echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
-          for SBOM in $(find . -iname enriched*.json); do
+          for SBOM in $(find . -iname final*.json); do
             /tmp/sbomqs score "$SBOM" >> ${GITHUB_STEP_SUMMARY}
           done
           echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
