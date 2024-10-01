@@ -32,6 +32,8 @@ jobs:
             --timeout 30m0s \
             --parallel 0 \
             --format cyclonedx \
+            --skip-db-update \
+            --offline-scan \
             --output /tmp/generated-keycloak-sbom.cdx.json \
             keycloak-${KEYCLOAK_TAG}
 
@@ -39,6 +41,8 @@ jobs:
             --timeout 30m0s \
             --parallel 0 \
             --format spdx-json \
+            --skip-db-update \
+            --offline-scan \
             --output /tmp/generated-keycloak-sbom.spdx.json \
             keycloak-${KEYCLOAK_TAG}
 
