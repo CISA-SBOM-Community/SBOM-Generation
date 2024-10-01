@@ -181,8 +181,8 @@ jobs:
             --subject primary-component \
             --name phase1-python-application \
             --author "$SBOM_AUTHOR" \
-            --supplier ${SBOM_SUPPLIER} \
-            --version ${GITHUB_SHA} \
+            --supplier "$SBOM_SUPPLIER" \
+            --version "$GITHUB_SHA" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --license 'Apache-2.0' \
             container-sbom-spdx/container-sbom.spdx.tmp > /tmp/augmented_container-sbom.spdx.json
