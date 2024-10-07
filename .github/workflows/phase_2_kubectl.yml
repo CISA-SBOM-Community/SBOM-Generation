@@ -3,7 +3,7 @@ name: Phase 2 - Kubectl
 on: [push]
 
 env:
-  KUBECTL_TAG: v0.31.1
+  KUBECTL_TAG: 0.31.1
   PARLAY_VERSION: 0.5.1
   SBOMASM_VERSION: 0.1.5
   SBOMQS_VERSION: 0.1.9
@@ -23,7 +23,7 @@ jobs:
       - name: Checkout Kubectl
         run: |
           curl -L -o /tmp/kubectl.tgz \
-            "https://github.com/kubernetes/kubectl/archive/refs/tags/${KUBECTL_TAG}.tar.gz"
+            "https://github.com/kubernetes/kubectl/archive/refs/tags/v${KUBECTL_TAG}.tar.gz"
           tar xvf /tmp/kubectl.tgz -C .
 
       - name: Generate SBOM with Trivy
