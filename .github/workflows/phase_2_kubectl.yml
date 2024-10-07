@@ -83,7 +83,7 @@ jobs:
               --supplier 'kubernetes (https://kubernetes.io/kubectl)' \
               --repository 'https://github.com/kubernetes/kubectl' \
               --license 'Apache-2.0 (https://raw.githubusercontent.com/kubernetes/kubectl/refs/heads/master/LICENSE)' \
-              generated-kubectl-sbom-spdx/generated-kubectl-sbom.spdx.json > kubectl-sbom.spdx.json
+              generated-kubectl-sbom-spdx/generated-kubectl-sbom.spdx.json > augmented_kubectl-sbom.spdx.json
 
           # Augment the Generated SPDX with updated primary component information
           /tmp/sbomasm edit --subject primary-component \
