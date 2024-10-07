@@ -1,0 +1,201 @@
+---
+name: Phase 2 - Kubectl
+on: [push]
+
+env:
+  KUBECTL_TAG: v0.31.1
+  PARLAY_VERSION: 0.5.1
+  SBOMASM_VERSION: 0.1.5
+  SBOMQS_VERSION: 0.1.9
+  TRIVY_VERSION: 0.54.1
+
+jobs:
+  Generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Trivy
+        run: |
+          curl -L -o /tmp/trivy.tgz \
+            "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+          tar xvf /tmp/trivy.tgz -C /tmp
+          chmod +x /tmp/trivy
+
+      - name: Checkout Kubectl
+        run: |
+          curl -L -o /tmp/kubectl.tgz \
+            "https://github.com/kubernetes/kubectl/archive/refs/tags/${KUBECTL_TAG}.tar.gz"
+          tar xvf /tmp/kubectl.tgz -C .
+
+      - name: Generate SBOM with Trivy
+        run: |
+          /tmp/trivy fs \
+            --timeout 30m0s \
+            --parallel 0 \
+            --format cyclonedx \
+            --skip-db-update \
+            --offline-scan \
+            --output /tmp/generated-kubectl-sbom.cdx.json \
+            kubectl-${KUBECTL_TAG}
+
+          /tmp/trivy fs \
+            --timeout 30m0s \
+            --parallel 0 \
+            --format spdx-json \
+            --skip-db-update \
+            --offline-scan \
+            --output /tmp/generated-kubectl-sbom.spdx.json \
+            kubectl-${KUBECTL_TAG}
+
+      - name: Upload Generated CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-kubectl-sbom-cyclonedx
+          path: "/tmp/generated-kubectl-sbom.cdx.json"
+
+      - name: Upload Generated SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-kubectl-sbom-spdx
+          path: "/tmp/generated-kubectl-sbom.spdx.json"
+  Augment:
+    runs-on: ubuntu-latest
+    needs: Generate
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Install sbomasm
+        run: |
+          curl -L -o /tmp/sbomasm \
+            "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
+          chmod +x /tmp/sbomasm
+
+      - name: Augment Kubectl SPDX
+        run: |
+          # Augment the Generated SPDX with updated document information
+          #   - Using `--append` option to ensure the author information is appended instead
+          #     of replacing the tool information.
+          /tmp/sbomasm edit --append --subject Document \
+              --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
+              --supplier 'kubernetes (https://kubernetes.io/kubectl)' \
+              --repository 'https://github.com/kubernetes/kubectl' \
+              --license 'Apache-2.0 (https://raw.githubusercontent.com/kubernetes/kubectl/refs/heads/master/LICENSE)' \
+              generated-kubectl-sbom-spdx/generated-kubectl-sbom.spdx.json > kubectl-sbom.spdx.json
+
+          # Augment the Generated SPDX with updated primary component information
+          /tmp/sbomasm edit --subject primary-component \
+              --supplier 'kubernetes (https://kubernetes.io/kubectl)' \
+              --repository 'https://github.com/kubernetes/kubectl' \
+              --license 'Apache-2.0 (https://raw.githubusercontent.com/kubernetes/kubectl/refs/heads/master/LICENSE)' \
+              augmented_kubectl-sbom.spdx.json > /tmp/augmented_kubectl-sbom.spdx.json
+
+      - name: Augment Kubectl CycloneDX
+        run: |
+          # Augment the Generated CycloneDX with updated document information
+          /tmp/sbomasm edit --subject Document \
+              --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
+              --supplier 'kubernetes (https://kubernetes.io/kubectl)' \
+              --lifecycle 'pre-build' \
+              --repository 'https://github.com/kubernetes/kubectl' \
+              --license 'Apache-2.0 (https://raw.githubusercontent.com/kubernetes/kubectl/refs/heads/master/LICENSE)' \
+              generated-kubectl-sbom-cyclonedx/generated-kubectl-sbom.cdx.json > augmented_kubectl-sbom.cdx.json
+
+          # Augment the Generated CycloneDX with updated primary component information
+          /tmp/sbomasm edit --subject primary-component \
+              --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
+              --supplier 'kubernetes (https://kubernetes.io/kubectl)' \
+              --repository 'https://github.com/kubernetes/kubectl' \
+              --license 'Apache-2.0 (https://raw.githubusercontent.com/kubernetes/kubectl/refs/heads/master/LICENSE)' \
+              augmented_kubectl-sbom.cdx.json > /tmp/augmented_kubectl-sbom.cdx.json
+      
+      - name: Upload Augmented SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: augmented-kubectl-sbom-spdx
+          path: "/tmp/augmented_kubectl-sbom.spdx.json"
+
+      - name: Upload Augmented CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: augmented-kubectl-sbom-cyclonedx
+          path: "/tmp/augmented_kubectl-sbom.cdx.json"
+
+  Enrich:
+    runs-on: ubuntu-latest
+    needs: Augment
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Install parlay
+        run: |
+          curl -Ls https://github.com/snyk/parlay/releases/download/v${PARLAY_VERSION}/parlay_Linux_x86_64.tar.gz | tar xvz -C /tmp
+          chmod +x /tmp/parlay
+
+      - name: Enrich Kubectl CycloneDX
+        run: |
+          /tmp/parlay ecosystems enrich \
+            augmented-kubectl-sbom-cyclonedx/augmented_kubectl-sbom.cdx.json > /tmp/enriched_kubectl-sbom.cdx.json
+
+      - name: Enrich Kubectl SPDX
+        run: |
+          /tmp/parlay ecosystems enrich \
+            augmented-kubectl-sbom-spdx/augmented_kubectl-sbom.spdx.json > /tmp/enriched_kubectl-sbom.spdx.json
+
+      - name: Upload Enriched SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: enriched-kubectl-sbom-spdx
+          path: "/tmp/enriched_kubectl-sbom.spdx.json"
+    
+      - name: Upload Enriched CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: enriched-kubectl-sbom-cyclonedx
+          path: "/tmp/enriched_kubectl-sbom.cdx.json"
+
+      - name: Save Final SBOMs
+        run: |
+          cp /tmp/enriched_kubectl-sbom.spdx.json /tmp/final_kubectl-sbom.spdx.json
+          cp /tmp/enriched_kubectl-sbom.cdx.json /tmp/final_kubectl-sbom.cdx.json
+
+      - name: Upload Final SPDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-kubectl-sbom-spdx
+          path: "/tmp/final_kubectl-sbom.spdx.json"
+
+      - name: Upload Final CycloneDX SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-kubectl-sbom-cyclonedx
+          path: "/tmp/final_kubectl-sbom.cdx.json"
+
+  Validate:
+    needs: Enrich
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download SBOMs
+        uses: actions/download-artifact@v4
+
+      - name: Install sbomqs
+        run: |
+          curl -L -o /tmp/sbomqs \
+            "https://github.com/interlynk-io/sbomqs/releases/download/v${SBOMQS_VERSION}/sbomqs-linux-amd64"
+          chmod +x /tmp/sbomqs
+
+      - name: "Display SBOM quality score through sbomqs"
+        run: |
+          echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
+          for SBOM in $(find . -iname final*.json); do
+            /tmp/sbomqs score "$SBOM" >> ${GITHUB_STEP_SUMMARY}
+          done
+          echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
