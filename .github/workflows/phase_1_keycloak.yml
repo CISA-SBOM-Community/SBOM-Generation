@@ -1,6 +1,9 @@
 ---
 name: Phase 1 - Keycloak
-on: [push]
+on:
+  push:
+    paths:
+      - github/workflows/phase_1_keycloak.yml
 
 env:
   KEYCLOAK_TAG: 25.0.4
