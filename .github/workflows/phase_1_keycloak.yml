@@ -50,13 +50,13 @@ jobs:
             keycloak-${KEYCLOAK_TAG}
 
       - name: Upload Generated CycloneDX SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
           name: generated-keycloak-sbom-cyclonedx
           path: "/tmp/generated-keycloak-sbom.cdx.json"
 
       - name: Upload Generated SPDX SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
           name: generated-keycloak-sbom-spdx
           path: "/tmp/generated-keycloak-sbom.spdx.json"
@@ -65,10 +65,10 @@ jobs:
     needs: Generate
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
 
       - name: Install sbomasm
         run: |
@@ -115,13 +115,13 @@ jobs:
               augmented_keycloak-sbom.cdx.json > /tmp/augmented_keycloak-sbom.cdx.json
       
       - name: Upload Augmented SPDX SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
           name: augmented-keycloak-sbom-spdx
           path: "/tmp/augmented_keycloak-sbom.spdx.json"
 
       - name: Upload Augmented CycloneDX SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
           name: augmented-keycloak-sbom-cyclonedx
           path: "/tmp/augmented_keycloak-sbom.cdx.json"
@@ -131,10 +131,10 @@ jobs:
     needs: Augment
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
 
       - name: Install parlay
         run: |
@@ -152,13 +152,13 @@ jobs:
             augmented-keycloak-sbom-spdx/augmented_keycloak-sbom.spdx.json > /tmp/enriched_keycloak-sbom.spdx.json
 
       - name: Upload Enriched SPDX SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
           name: enriched-keycloak-sbom-spdx
           path: "/tmp/enriched_keycloak-sbom.spdx.json"
     
       - name: Upload Enriched CycloneDX SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
           name: enriched-keycloak-sbom-cyclonedx
           path: "/tmp/enriched_keycloak-sbom.cdx.json"
@@ -169,13 +169,13 @@ jobs:
           cp /tmp/enriched_keycloak-sbom.cdx.json /tmp/final_keycloak-sbom.cdx.json
 
       - name: Upload Final SPDX SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
           name: final-keycloak-sbom-spdx
           path: "/tmp/final_keycloak-sbom.spdx.json"
 
       - name: Upload Final CycloneDX SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
           name: final-keycloak-sbom-cyclonedx
           path: "/tmp/final_keycloak-sbom.cdx.json"
@@ -184,10 +184,10 @@ jobs:
     needs: Enrich
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: Download SBOMs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
 
       - name: Install sbomqs
         run: |
