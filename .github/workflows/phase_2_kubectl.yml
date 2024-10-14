@@ -3,7 +3,7 @@ name: Phase 2 - Kubectl
 on:
   push:
     paths:
-      - github/workflows/phase_2_kubectl.yml
+      - .github/workflows/phase_2_kubectl.yml
 
 env:
   KUBECTL_TAG: 0.31.1

@@ -3,7 +3,7 @@ name: Phase 1 - Python
 on:
   push:
     paths:
-      - github/workflows/phase_1_python.yml
+      - .github/workflows/phase_1_python.yml
       - 'phase_1/Python/**'
 
 env:
