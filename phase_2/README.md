@@ -2,7 +2,7 @@
 
 This workflow illustrates creation of SPDX and CycloneDX SBOMs for a golang application. [Kubectl](https://github.com/kubernetes/kubectl) is used as an example due to its wide use and complexity. The workflow is well commented and can be used as a reference implementation for your own projects.
 
-- [.github/workflows/phase_2_kubectl.yml](../../.github/workflows/phase_2_kubectl.yml)
+- [.github/workflows/phase_2_kubectl.yml](../.github/workflows/phase_2_kubectl.yml)
 
 ## Reference Impelementation Objectives
 
@@ -10,7 +10,7 @@ This workflow illustrates creation of SPDX and CycloneDX SBOMs for a golang appl
 - Showcase the additional SBOM lifecycle steps
 - Provide sample tools and implementation for others to use
 
-![SBOM Lifecycle](../../assets/lifecycle.svg)
+![SBOM Lifecycle](../assets/lifecycle.svg)
 
 - `Generate SBOM with Trivy` Job
   - __Tool__
