@@ -53,13 +53,13 @@ jobs:
             phase-1-python
 
       - name: Upload CycloneDX SBOM
-        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
           name: container-sbom-cyclonedx
           path: "/tmp/container-sbom.cdx.json"
 
       - name: Upload SPDX SBOM
-        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
           name: container-sbom-spdx
           path: "/tmp/container-sbom.spdx.json"
@@ -94,13 +94,13 @@ jobs:
             requirements.txt
 
       - name: Upload CycloneDX SBOM
-        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
           name: application-sbom-cyclonedx
           path: "/tmp/application-sbom.cdx.json"
 
       - name: Upload SPDX SBOM
-        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
           name: application-sbom-spdx
           path: "/tmp/application-sbom.spdx.json"
@@ -212,7 +212,7 @@ jobs:
             /tmp/augmented_application-sbom.spdx.tmp > /tmp/augmented_application-sbom.spdx.json
 
       - name: Upload Augmented SBOMs
-        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
           name: augmented-sboms
           path: "/tmp/augmented_*.json"
@@ -249,7 +249,7 @@ jobs:
             augmented-sboms/augmented_application-sbom.spdx.json > /tmp/enriched_application-sbom.spdx.json
 
       - name: Upload Enriched SBOMs
-        uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
           name: enriched-sboms
           path: "/tmp/enriched_*.json"
