@@ -8,8 +8,8 @@ on:
 env:
   KEYCLOAK_TAG: 25.0.4
   PARLAY_VERSION: 0.5.1
-  SBOMASM_VERSION: 0.1.5
-  SBOMQS_VERSION: 0.1.9
+  SBOMASM_VERSION: 0.1.9
+  SBOMQS_VERSION: 0.2.0
   TRIVY_VERSION: 0.54.1
 
 jobs:
@@ -64,7 +64,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: Generate
     steps:
-
       - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: Download all workflow run artifacts
@@ -93,6 +92,7 @@ jobs:
               --supplier 'keycloak (https://www.keycloak.org/)' \
               --repository 'https://github.com/keycloak/keycloak' \
               --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
+              --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
               augmented_keycloak-sbom.spdx.json > /tmp/augmented_keycloak-sbom.spdx.json
 
       - name: Augment Keycloak CycloneDX
@@ -112,8 +112,9 @@ jobs:
               --supplier 'keycloak (https://www.keycloak.org/)' \
               --repository 'https://github.com/keycloak/keycloak' \
               --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
+              --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
               augmented_keycloak-sbom.cdx.json > /tmp/augmented_keycloak-sbom.cdx.json
-      
+
       - name: Upload Augmented SPDX SBOM
         uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
@@ -130,7 +131,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: Augment
     steps:
-
       - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: Download all workflow run artifacts
@@ -141,22 +141,40 @@ jobs:
           curl -Ls https://github.com/snyk/parlay/releases/download/v${PARLAY_VERSION}/parlay_Linux_x86_64.tar.gz | tar xvz -C /tmp
           chmod +x /tmp/parlay
 
+      - name: Install sbomasm
+        run: |
+          curl -L -o /tmp/sbomasm \
+            "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
+          chmod +x /tmp/sbomasm
+
       - name: Enrich Keycloak CycloneDX
         run: |
           /tmp/parlay ecosystems enrich \
-            augmented-keycloak-sbom-cyclonedx/augmented_keycloak-sbom.cdx.json > /tmp/enriched_keycloak-sbom.cdx.json
+            augmented-keycloak-sbom-cyclonedx/augmented_keycloak-sbom.cdx.json > enriched_keycloak-sbom.cdx.json
 
       - name: Enrich Keycloak SPDX
         run: |
           /tmp/parlay ecosystems enrich \
-            augmented-keycloak-sbom-spdx/augmented_keycloak-sbom.spdx.json > /tmp/enriched_keycloak-sbom.spdx.json
+            augmented-keycloak-sbom-spdx/augmented_keycloak-sbom.spdx.json > enriched_keycloak-sbom.spdx.json
+
+      - name: Append enrichment tool to SBOM
+        run: |
+          /tmp/sbomasm edit --append --subject Document \
+              --tool 'parlay ( ${{ env.PARLAY_VERSION }} )' \
+              --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
+              enriched_keycloak-sbom.spdx.json > /tmp/enriched_keycloak-sbom.spdx.json
+
+          /tmp/sbomasm edit --append --subject Document \
+              --tool 'parlay ( ${{ env.PARLAY_VERSION }} )' \
+              --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
+              enriched_keycloak-sbom.cdx.json > /tmp/enriched_keycloak-sbom.cdx.json
 
       - name: Upload Enriched SPDX SBOM
         uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
           name: enriched-keycloak-sbom-spdx
           path: "/tmp/enriched_keycloak-sbom.spdx.json"
-    
+
       - name: Upload Enriched CycloneDX SBOM
         uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
         with:
