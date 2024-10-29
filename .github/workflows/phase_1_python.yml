@@ -4,12 +4,12 @@ on:
   push:
     paths:
       - .github/workflows/phase_1_python.yml
-      - 'phase_1/Python/**'
+      - "phase_1/Python/**"
 
 env:
   PARLAY_VERSION: 0.5.1
-  SBOMASM_VERSION: 0.1.5
-  SBOMQS_VERSION: 0.1.9
+  SBOMASM_VERSION: 0.1.9
+  SBOMQS_VERSION: 0.2.0
   SEMVER: 0.1.0
   TRIVY_VERSION: 0.54.1
   SBOM_AUTHOR: "CISA Tiger Group for SBOM Generation Reference Implementations"
@@ -110,12 +110,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [Generate_Container, Generate_Application]
     steps:
-
       - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
-
 
       - name: Install sbomasm
         run: |
@@ -141,6 +139,7 @@ jobs:
             --version "$GITHUB_SHA" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --license 'Apache-2.0' \
+            --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
             /tmp/augmented_container-sbom.cdx.tmp > /tmp/augmented_container-sbom.cdx.json
 
       - name: "CycloneDX: Augment Application SBOM"
@@ -163,6 +162,7 @@ jobs:
             --version "$GITHUB_SHA" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --license 'Apache-2.0' \
+            --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
             /tmp/augmented_application-sbom.cdx.tmp >/tmp/augmented_application-sbom.cdx.json
 
       - name: "SPDX: Augment Container SBOM"
@@ -186,6 +186,7 @@ jobs:
             --version "$GITHUB_SHA" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --license 'Apache-2.0' \
+            --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
             /tmp/augmented_container-sbom.spdx.tmp > /tmp/augmented_container-sbom.spdx.json
 
       - name: "SPDX: Augment Application SBOM"
@@ -209,6 +210,7 @@ jobs:
             --version "$GITHUB_SHA" \
             --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
             --license 'Apache-2.0' \
+            --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
             /tmp/augmented_application-sbom.spdx.tmp > /tmp/augmented_application-sbom.spdx.json
 
       - name: Upload Augmented SBOMs
@@ -232,6 +234,12 @@ jobs:
           curl -Ls https://github.com/snyk/parlay/releases/download/v${PARLAY_VERSION}/parlay_Linux_x86_64.tar.gz | tar xvz -C /tmp
           chmod +x /tmp/parlay
 
+      - name: Install sbomasm
+        run: |
+          curl -L -o /tmp/sbomasm \
+            "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
+          chmod +x /tmp/sbomasm
+
       - name: "CycloneDX: Enrich SBOMs"
         run: |
           /tmp/parlay ecosystems enrich \
@@ -247,6 +255,36 @@ jobs:
 
           /tmp/parlay ecosystems enrich \
             augmented-sboms/augmented_application-sbom.spdx.json > /tmp/enriched_application-sbom.spdx.json
+
+      - name: "SPDX: Append enrichment tool to SBOMs"
+        run: |
+          /tmp/sbomasm edit --append --subject Document \
+              --tool 'parlay ( ${{ env.PARLAY_VERSION }} )' \
+              --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
+              /tmp/enriched_container-sbom.spdx.json > /tmp/enriched_container-sbom_with_tools.spdx.json
+
+          /tmp/sbomasm edit --append --subject Document \
+              --tool 'parlay ( ${{ env.PARLAY_VERSION }} )' \
+              --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
+              /tmp/enriched_application-sbom.spdx.json > /tmp/enriched_application-sbom_with_tools.spdx.json
+
+          mv /tmp/enriched_container-sbom_with_tools.spdx.json /tmp/enriched_container-sbom.spdx.json
+          mv /tmp/enriched_application-sbom_with_tools.spdx.json /tmp/enriched_application-sbom.spdx.json
+
+      - name: "CycloneDX: Append enrichment tool to SBOMs"
+        run: |
+          /tmp/sbomasm edit --append --subject Document \
+              --tool 'parlay ( ${{ env.PARLAY_VERSION }} )' \
+              --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
+              /tmp/enriched_container-sbom.cdx.json > /tmp/enriched_container-sbom_with_tools.cdx.json
+
+          /tmp/sbomasm edit --append --subject Document \
+              --tool 'parlay ( ${{ env.PARLAY_VERSION }} )' \
+              --tool 'sbomasm ( ${{ env.SBOMASM_VERSION }} )' \
+              /tmp/enriched_application-sbom.cdx.json > /tmp/enriched_application-sbom_with_tools.cdx.json
+
+          mv /tmp/enriched_container-sbom_with_tools.cdx.json /tmp/enriched_container-sbom.cdx.json
+          mv /tmp/enriched_application-sbom_with_tools.cdx.json /tmp/enriched_application-sbom.cdx.json
 
       - name: Upload Enriched SBOMs
         uses: actions/upload-artifact@84480863f228bb9747b473957fcc9e309aa96097 # v4
@@ -269,7 +307,6 @@ jobs:
           curl -L -o /tmp/sbomqs \
             "https://github.com/interlynk-io/sbomqs/releases/download/v${SBOMQS_VERSION}/sbomqs-linux-amd64"
           chmod +x /tmp/sbomqs
-
 
       - name: "Display SBOM quality score through sbomqs"
         run: |
