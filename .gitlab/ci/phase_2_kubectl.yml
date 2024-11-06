@@ -1,0 +1,19 @@
+---
+variables:
+  KUBECTL_TAG: 0.31.1
+  PARLAY_VERSION: 0.6.0
+  SBOMASM_VERSION: 0.1.5
+  SBOMQS_VERSION: 0.1.9
+  TRIVY_VERSION: 0.54.1
+
+
+Kubectl:Generate:
+  stage: "SBOM Generation"
+  before_script:
+    - |
+        curl -L -o /tmp/trivy.tgz \
+          "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+        tar xvf /tmp/trivy.tgz -C /tmp
+        chmod +x /tmp/trivy
+  script:
+    - echo "todo"

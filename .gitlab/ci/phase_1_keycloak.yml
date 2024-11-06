@@ -1,0 +1,118 @@
+---
+variables:
+  KEYCLOAK_TAG: 25.0.4
+  PARLAY_VERSION: 0.6.0
+  SBOMASM_VERSION: 0.1.9
+  SBOMQS_VERSION: 0.1.9
+  TRIVY_VERSION: 0.54.1
+
+
+Keycloak:Generate:
+  stage: "SBOM Generation"
+  before_script:
+    - |
+        curl -L -o /tmp/trivy.tgz \
+          "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+        tar xvf /tmp/trivy.tgz -C /tmp
+        chmod +x /tmp/trivy
+  script:
+    - |
+        curl -L -o /tmp/keycloak.tgz \
+          "https://github.com/keycloak/keycloak/archive/refs/tags/${KEYCLOAK_TAG}.tar.gz"
+        tar xvf /tmp/keycloak.tgz -C .
+    - |
+        /tmp/trivy fs \
+          --timeout 30m0s \
+          --parallel 0 \
+          --format cyclonedx \
+          --skip-db-update \
+          --offline-scan \
+          --output generated-keycloak-sbom.cdx.json \
+          keycloak-${KEYCLOAK_TAG}
+    - |
+        /tmp/trivy fs \
+          --timeout 30m0s \
+          --parallel 0 \
+          --format spdx-json \
+          --skip-db-update \
+          --offline-scan \
+          --output generated-keycloak-sbom.spdx.json \
+          keycloak-${KEYCLOAK_TAG}
+  needs: []
+  artifacts:
+    paths:
+      - generated-keycloak-sbom.*.json
+    when: always
+
+
+Keycloak:Augment:
+  stage: "SBOM Augmentation"
+  before_script:
+    - |
+        curl -L -o /tmp/sbomasm \
+            "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
+        chmod +x /tmp/sbomasm
+  script:
+    - |
+        /tmp/sbomasm edit --append --subject Document \
+          --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
+          --supplier 'keycloak (https://www.keycloak.org/)' \
+          --repository 'https://github.com/keycloak/keycloak' \
+          --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
+          generated-keycloak-sbom.spdx.json > temp_keycloak-sbom.spdx.json
+    - |
+        /tmp/sbomasm edit --subject primary-component \
+          --supplier 'keycloak (https://www.keycloak.org/)' \
+          --repository 'https://github.com/keycloak/keycloak' \
+          --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
+          temp_keycloak-sbom.spdx.json > augmented_keycloak-sbom.spdx.json
+    # TODO need to add author back in. It was removed because sbomasm was failing
+    - |
+        /tmp/sbomasm edit --append --subject Document \
+          --supplier 'keycloak (https://www.keycloak.org/)' \
+          --repository 'https://github.com/keycloak/keycloak' \
+          --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
+          generated-keycloak-sbom.cdx.json > temp_keycloak-sbom.cdx.json
+    - |
+        /tmp/sbomasm edit --subject primary-component \
+          --supplier 'keycloak (https://www.keycloak.org/)' \
+          --repository 'https://github.com/keycloak/keycloak' \
+          --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
+          generated-keycloak-sbom.cdx.json > augmented_keycloak-sbom.cdx.json
+  needs: ["Keycloak:Generate"]
+  artifacts:
+    paths:
+      - temp_keycloak-sbom.*.json
+      - augmented_keycloak-sbom.*.json
+    when: always
+
+
+Keycloak:Enrich:
+  stage: "SBOM Enrichment"
+  before_script:
+    - |
+        curl -Ls https://github.com/snyk/parlay/releases/download/v${PARLAY_VERSION}/parlay_Linux_x86_64.tar.gz | tar xvz -C /tmp
+        chmod +x /tmp/parlay
+  script:
+    - /tmp/parlay ecosystems enrich augmented_keycloak-sbom.cdx.json > enriched_keycloak-sbom.cdx.json
+    - /tmp/parlay ecosystems enrich augmented_keycloak-sbom.spdx.json > enriched_keycloak-sbom.spdx.json
+    - cp enriched_keycloak-sbom.spdx.json final_keycloak-sbom.spdx.json
+    - cp enriched_keycloak-sbom.cdx.json final_keycloak-sbom.cdx.json
+  needs: ["Keycloak:Augment"]
+  artifacts:
+    paths:
+      - enriched_keycloak-sbom.*.json
+      - final_keycloak-sbom.*.json
+    when: always
+
+
+Keycloak:Validate:
+  stage: "SBOM Validation"
+  before_script:
+    - |
+        curl -L -o /tmp/sbomqs \
+          "https://github.com/interlynk-io/sbomqs/releases/download/v${SBOMQS_VERSION}/sbomqs-linux-amd64"
+        chmod +x /tmp/sbomqs
+  script:
+    - /tmp/sbomqs score final_keycloak-sbom.*.json
+  needs: ["Keycloak:Enrich"]

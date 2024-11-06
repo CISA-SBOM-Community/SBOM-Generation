@@ -1,0 +1,10 @@
+---
+
+stages:
+  - "SBOM Generation"
+  - "SBOM Augmentation"
+  - "SBOM Enrichment"
+  - "SBOM Validation"
+
+include:
+  - local: .gitlab/ci/*.yml
