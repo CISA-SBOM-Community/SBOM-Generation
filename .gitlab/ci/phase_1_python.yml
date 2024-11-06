@@ -1,0 +1,21 @@
+---
+variables:
+  PARLAY_VERSION: 0.6.0
+  SBOMASM_VERSION: 0.1.5
+  SBOMQS_VERSION: 0.1.9
+  SEMVER: 0.1.0
+  TRIVY_VERSION: 0.54.1
+  SBOM_AUTHOR: "CISA Tiger Group for SBOM Generation Reference Implementations"
+  SBOM_SUPPLIER: "CISA Tiger Group for SBOM Generation Reference Implementations"
+
+
+Python:Generate:
+  stage: "SBOM Generation"
+  before_script:
+    - |
+        curl -L -o /tmp/trivy.tgz \
+          "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+        tar xvf /tmp/trivy.tgz -C /tmp
+        chmod +x /tmp/trivy
+  script:
+    - echo "todo"
