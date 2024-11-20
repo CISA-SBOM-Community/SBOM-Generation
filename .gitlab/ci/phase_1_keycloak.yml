@@ -4,7 +4,7 @@ variables:
   PARLAY_VERSION: 0.6.0
   SBOMASM_VERSION: 0.1.9
   SBOMQS_VERSION: 0.2.3
-  TRIVY_VERSION: 0.54.1
+  TRIVY_VERSION: 0.57.1
 
 
 Keycloak:Generate:
