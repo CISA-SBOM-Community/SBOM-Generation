@@ -1,10 +1,10 @@
 ---
 variables:
   PARLAY_VERSION: 0.6.0
-  SBOMASM_VERSION: 0.1.5
-  SBOMQS_VERSION: 0.1.9
+  SBOMASM_VERSION: 0.1.9
+  SBOMQS_VERSION: 0.2.3
   SEMVER: 0.1.0
-  TRIVY_VERSION: 0.54.1
+  TRIVY_VERSION: 0.57.1
   SBOM_AUTHOR: "CISA Tiger Group for SBOM Generation Reference Implementations"
   SBOM_SUPPLIER: "CISA Tiger Group for SBOM Generation Reference Implementations"
 
@@ -18,4 +18,176 @@ Python:Generate:
         tar xvf /tmp/trivy.tgz -C /tmp
         chmod +x /tmp/trivy
   script:
-    - echo "todo"
+    - |
+        docker build -t phase-1-python .
+    - |
+        cd "phase_1/Python"
+
+        # Container SBOMs
+        /tmp/trivy image \
+          --format cyclonedx \
+          --pkg-types os \
+          --output /tmp/container-sbom.cdx.json \
+          phase-1-python
+
+        /tmp/trivy image \
+          --format spdx-json \
+          --pkg-types os \
+          --output /tmp/container-sbom.spdx.json \
+          phase-1-python
+
+        # Application SBOMs
+        /tmp/trivy fs \
+          --format cyclonedx \
+          --output /tmp/application-sbom.cdx.json \
+          requirements.txt
+
+        /tmp/trivy fs \
+          --format spdx-json \
+          --output /tmp/application-sbom.spdx.json \
+          requirements.txt
+
+  artifacts:
+    paths:
+      - /tmp/container-sbom.*.json
+      - /tmp/application-sbom.*.json
+    when: always
+
+Python:Augment:
+  stage: "SBOM Augmentation"
+  before_script:
+    - |
+        curl -L -o /tmp/sbomasm \
+            "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
+        chmod +x /tmp/sbomasm
+
+  script:
+    - |
+        /tmp/sbomasm edit \
+          --subject Document \
+          --author "$SBOM_AUTHOR" \
+          --supplier "$SBOM_SUPPLIER" \
+          --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
+          --license 'Apache-2.0' \
+          /tmp/container-sbom.cdx.json > /tmp/augmented_container-sbom.cdx.tmp
+
+        /tmp/sbomasm edit \
+          --subject primary-component \
+          --name phase1-python-application \
+          --author "$SBOM_AUTHOR" \
+          --supplier "$SBOM_SUPPLIER" \
+          --version "$GITHUB_SHA" \
+          --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
+          --license 'Apache-2.0' \
+          /tmp/augmented_container-sbom.cdx.tmp > /tmp/augmented_container-sbom.cdx.json
+
+    - |
+        /tmp/sbomasm edit \
+          --subject Document \
+          --name phase1-python-application \
+          --author "$SBOM_AUTHOR" \
+          --supplier "$SBOM_SUPPLIER" \
+          --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
+          --lifecycle pre-build \
+          --license 'Apache-2.0' \
+          /tmp/application-sbom.cdx.json > /tmp/augmented_application-sbom.cdx.tmp
+
+        /tmp/sbomasm edit \
+          --subject primary-component \
+          --name phase1-python-application \
+          --author "$SBOM_AUTHOR" \
+          --supplier "$SBOM_SUPPLIER" \
+          --version "$GITHUB_SHA" \
+          --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
+          --license 'Apache-2.0' \
+          /tmp/augmented_application-sbom.cdx.tmp >/tmp/augmented_application-sbom.cdx.json
+
+    - |
+        /tmp/sbomasm edit \
+          --append \
+          --subject Document \
+          --name phase1-python-application \
+          --author "$SBOM_AUTHOR" \
+          --supplier "$SBOM_SUPPLIER" \
+          --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
+          --lifecycle pre-build \
+          --license 'Apache-2.0' \
+          /tmp/container-sbom.spdx.json > /tmp/augmented_container-sbom.spdx.tmp
+
+        /tmp/sbomasm edit \
+          --subject primary-component \
+          --name phase1-python-application \
+          --author "$SBOM_AUTHOR" \
+          --supplier "$SBOM_SUPPLIER" \
+          --version "$GITHUB_SHA" \
+          --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
+          --license 'Apache-2.0' \
+          /tmp/augmented_container-sbom.spdx.tmp > /tmp/augmented_container-sbom.spdx.json
+
+    - |
+        /tmp/sbomasm edit \
+          --append \
+          --subject Document \
+          --name phase1-python-application \
+          --author "$SBOM_AUTHOR" \
+          --supplier "$SBOM_SUPPLIER" \
+          --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
+          --lifecycle pre-build \
+          --license 'Apache-2.0' \
+          /tmp/application-sbom.spdx.json > /tmp/augmented_application-sbom.spdx.tmp
+
+        /tmp/sbomasm edit \
+          --subject primary-component \
+          --name phase1-python-application \
+          --author "$SBOM_AUTHOR" \
+          --supplier "$SBOM_SUPPLIER" \
+          --version "$GITHUB_SHA" \
+          --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
+          --license 'Apache-2.0' \
+          /tmp/augmented_application-sbom.spdx.tmp > /tmp/augmented_application-sbom.spdx.json
+
+  needs: ["Python:Generate"]
+  artifacts:
+    paths:
+      - /tmp/augmented_container-sbom.*.json
+      - /tmp/augmented_application-sbom.*.json
+    when: always
+
+Python:Enrich:
+  stage: "SBOM Enrichment"
+  before_script:
+    - |
+        curl -Ls https://github.com/snyk/parlay/releases/download/v${PARLAY_VERSION}/parlay_Linux_x86_64.tar.gz | tar xvz -C /tmp
+        chmod +x /tmp/parlay
+  script:
+    - |
+      /tmp/parlay ecosystems enrich \
+        augmented_container-sbom.cdx.json > /tmp/enriched_container-sbom.cdx.json
+
+      /tmp/parlay ecosystems enrich \
+        augmented_application-sbom.cdx.json > /tmp/enriched_application-sbom.cdx.json
+
+    - |
+      /tmp/parlay ecosystems enrich \
+        augmented_container-sbom.spdx.json > /tmp/enriched_container-sbom.spdx.json
+
+      /tmp/parlay ecosystems enrich \
+        augmented_application-sbom.spdx.json > /tmp/enriched_application-sbom.spdx.json
+
+  needs: ["Python:Augment"]
+  artifacts:
+    paths:
+      - /tmp/enriched_container-sbom.*.json
+      - /tmp/enriched_application-sbom.*.json
+    when: always
+
+Python:Validate:
+  stage: "SBOM Validation"
+  before_script:
+    - |
+        curl -L -o /tmp/sbomqs \
+          "https://github.com/interlynk-io/sbomqs/releases/download/v${SBOMQS_VERSION}/sbomqs-linux-amd64"
+        chmod +x /tmp/sbomqs
+  script:
+    - /tmp/sbomqs score enriched_*.*.json
+  needs: ["Python:Enrich"]
