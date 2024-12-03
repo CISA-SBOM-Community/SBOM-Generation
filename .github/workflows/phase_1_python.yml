@@ -8,10 +8,10 @@ on:
 
 env:
   PARLAY_VERSION: 0.6.0
-  SBOMASM_VERSION: 0.1.5
-  SBOMQS_VERSION: 0.1.9
+  SBOMASM_VERSION: 0.1.9
+  SBOMQS_VERSION: 0.2.3
   SEMVER: 0.1.0
-  TRIVY_VERSION: 0.54.1
+  TRIVY_VERSION: 0.57.1
   SBOM_AUTHOR: "CISA Tiger Group for SBOM Generation Reference Implementations"
   SBOM_SUPPLIER: "CISA Tiger Group for SBOM Generation Reference Implementations"
 
