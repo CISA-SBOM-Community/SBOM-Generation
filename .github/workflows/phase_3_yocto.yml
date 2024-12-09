@@ -3,7 +3,7 @@ name: Phase 3 - Yocto
 on:
   push:
     paths:
-      - .github/workflows/phase_2_kubectl.yml
+      - .github/workflows/phase_3_yocto.yml
 
 env:
   YOCTO_TAG: styhead-5.1
