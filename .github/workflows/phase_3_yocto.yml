@@ -32,10 +32,10 @@ jobs:
           source oe-init-build-env
           echo "BB_NUMBER_THREADS=\"8\"" >> conf/local.conf
           echo "PARALLEL_MAKE=\"-j 8\"" >> conf/local.conf
-          echo "BB_HASHSERVE = \"auto\"" >> conf/site.conf
-          echo "BB_HASHSERVE_UPSTREAM = \"hashserv.yoctoproject.org:8687\"" >> conf/site.conf
-          echo -e "SSTATE_MIRRORS = \" \\ \nfile://.* http://sstate.yoctoproject.org/all/PATH;downloadfilename=PATH \\\n \\ \nfile://.* http://sstate.yoctoproject.org/dev/PATH;downloadfilename=PATH \\\n \\ \n\"" >> conf/site.conf
-          ping -c 2 hashserv.yoctoproject.org
+          # echo "BB_HASHSERVE = \"auto\"" >> conf/site.conf
+          # echo "BB_HASHSERVE_UPSTREAM = \"hashserv.yoctoproject.org:8687\"" >> conf/site.conf
+          # echo -e "SSTATE_MIRRORS = \" \\ \nfile://.* http://sstate.yoctoproject.org/all/PATH;downloadfilename=PATH \\\n \\ \nfile://.* http://sstate.yoctoproject.org/dev/PATH;downloadfilename=PATH \\\n \\ \n\"" >> conf/site.conf
+          # ping -c 2 hashserv.yoctoproject.org
           bitbake core-image-minimal
 
   #     - name: Upload Generated CycloneDX SBOM
