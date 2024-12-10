@@ -2,9 +2,9 @@
 variables:
   KUBECTL_TAG: 0.31.1
   PARLAY_VERSION: 0.6.0
-  SBOMASM_VERSION: 0.1.5
-  SBOMQS_VERSION: 0.1.9
-  TRIVY_VERSION: 0.54.1
+  SBOMASM_VERSION: 0.1.9
+  SBOMQS_VERSION: 0.2.3
+  TRIVY_VERSION: 0.57.1
 
 
 Kubectl:Generate:
@@ -13,7 +13,127 @@ Kubectl:Generate:
     - |
         curl -L -o /tmp/trivy.tgz \
           "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+    - |
         tar xvf /tmp/trivy.tgz -C /tmp
+    - |
         chmod +x /tmp/trivy
   script:
-    - echo "todo"
+    - |
+        curl -L -o /tmp/kubectl.tgz \
+          "https://github.com/kubernetes/kubectl/archive/refs/tags/v${KUBECTL_TAG}.tar.gz"
+    - |
+        tar xvf /tmp/kubectl.tgz -C .
+    - |
+        /tmp/trivy fs \
+          --timeout 30m0s \
+          --parallel 0 \
+          --format cyclonedx \
+          --skip-db-update \
+          --offline-scan \
+          --output generated-kubectl-sbom.cdx.json \
+          kubectl-${KUBECTL_TAG}
+    - |
+        /tmp/trivy fs \
+          --timeout 30m0s \
+          --parallel 0 \
+          --format spdx-json \
+          --skip-db-update \
+          --offline-scan \
+          --output generated-kubectl-sbom.spdx.json \
+          kubectl-${KUBECTL_TAG}
+  needs: []
+  artifacts:
+    paths:
+      - generated-kubectl-sbom.*.json
+    when: always
+
+
+Kubectl:Augment:
+  stage: "SBOM Augmentation"
+  before_script:
+    - |
+        curl -L -o /tmp/sbomasm \
+          "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
+    - |
+        chmod +x /tmp/sbomasm
+  script:
+    - |
+        /tmp/sbomasm edit \
+          --append \
+          --subject Document \
+          --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
+          --supplier 'kubernetes (https://kubernetes.io/kubectl)' \
+          --repository 'https://github.com/kubernetes/kubectl' \
+          --license 'Apache-2.0 (https://raw.githubusercontent.com/kubernetes/kubectl/refs/heads/master/LICENSE)' \
+          generated-kubectl-sbom.spdx.json > temp_kubectl-sbom.spdx.json
+    - |
+        /tmp/sbomasm edit \
+          --subject primary-component \
+          --supplier 'kubernetes (https://kubernetes.io/kubectl)' \
+          --repository 'https://github.com/kubernetes/kubectl' \
+          --license 'Apache-2.0 (https://raw.githubusercontent.com/kubernetes/kubectl/refs/heads/master/LICENSE)' \
+          --version "${CI_COMMIT_SHA}" \
+          temp_kubectl-sbom.spdx.json > augmented_kubectl-sbom.spdx.json
+    - |
+        /tmp/sbomasm edit \
+          --append \
+          --subject Document \
+          --supplier 'kubernetes (https://kubernetes.io/kubectl)' \
+          --repository 'https://github.com/kubernetes/kubectl' \
+          --license 'Apache-2.0 (https://raw.githubusercontent.com/kubernetes/kubectl/refs/heads/master/LICENSE)' \
+          generated-kubectl-sbom.cdx.json > temp_kubectl-sbom.cdx.json
+    - |
+        /tmp/sbomasm edit \
+          --subject primary-component \
+          --supplier 'kubernetes (https://kubernetes.io/kubectl)' \
+          --repository 'https://github.com/kubernetes/kubectl' \
+          --license 'Apache-2.0 (https://raw.githubusercontent.com/kubernetes/kubectl/refs/heads/master/LICENSE)' \
+          --version "${CI_COMMIT_SHA}" \
+          generated-kubectl-sbom.cdx.json > augmented_kubectl-sbom.cdx.json
+  needs: ["Kubectl:Generate"]
+  artifacts:
+    paths:
+      - temp_kubectl-sbom.*.json
+      - augmented_kubectl-sbom.*.json
+    when: always
+
+
+Kubectl:Enrich:
+  stage: "SBOM Enrichment"
+  before_script:
+    - |
+        curl -Ls https://github.com/snyk/parlay/releases/download/v${PARLAY_VERSION}/parlay_Linux_x86_64.tar.gz | \
+          tar xvz -C /tmp
+    - |
+        chmod +x /tmp/parlay
+  script:
+    - |
+        /tmp/parlay ecosystems enrich \
+          augmented_kubectl-sbom.cdx.json > enriched_kubectl-sbom.cdx.json
+    - |
+        /tmp/parlay ecosystems enrich \
+          augmented_kubectl-sbom.spdx.json > enriched_kubectl-sbom.spdx.json
+    - |
+        cp enriched_kubectl-sbom.spdx.json final_kubectl-sbom.spdx.json
+    - |
+        cp enriched_kubectl-sbom.cdx.json final_kubectl-sbom.cdx.json
+  needs: ["Kubectl:Augment"]
+  artifacts:
+    paths:
+      - enriched_kubectl-sbom.*.json
+      - final_kubectl-sbom.*.json
+    when: always
+
+
+Kubectl:Validate:
+  stage: "SBOM Validation"
+  before_script:
+    - |
+        curl -L -o /tmp/sbomqs \
+          "https://github.com/interlynk-io/sbomqs/releases/download/v${SBOMQS_VERSION}/sbomqs-linux-amd64"
+    - |
+        chmod +x /tmp/sbomqs
+  script:
+    - |
+        /tmp/sbomqs score final_kubectl-sbom.*.json
+  needs: ["Kubectl:Enrich"]

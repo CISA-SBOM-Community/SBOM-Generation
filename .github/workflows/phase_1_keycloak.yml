@@ -8,9 +8,9 @@ on:
 env:
   KEYCLOAK_TAG: 25.0.4
   PARLAY_VERSION: 0.6.0
-  SBOMASM_VERSION: 0.1.5
-  SBOMQS_VERSION: 0.1.9
-  TRIVY_VERSION: 0.54.1
+  SBOMASM_VERSION: 0.1.9
+  SBOMQS_VERSION: 0.2.3
+  TRIVY_VERSION: 0.57.1
 
 jobs:
   Generate:
@@ -113,7 +113,7 @@ jobs:
               --repository 'https://github.com/keycloak/keycloak' \
               --license 'Apache-2.0 (https://raw.githubusercontent.com/keycloak/keycloak/refs/heads/main/LICENSE.txt)' \
               augmented_keycloak-sbom.cdx.json > /tmp/augmented_keycloak-sbom.cdx.json
-      
+
       - name: Upload Augmented SPDX SBOM
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
@@ -156,7 +156,7 @@ jobs:
         with:
           name: enriched-keycloak-sbom-spdx
           path: "/tmp/enriched_keycloak-sbom.spdx.json"
-    
+
       - name: Upload Enriched CycloneDX SBOM
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
