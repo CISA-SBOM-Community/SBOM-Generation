@@ -117,6 +117,7 @@ Python:Augment:
           --license 'Apache-2.0' \
           /tmp/container-sbom.spdx.json > /tmp/augmented_container-sbom.spdx.tmp
 
+    - |
         /tmp/sbomasm edit \
           --subject primary-component \
           --name phase1-python-application \
