@@ -94,6 +94,7 @@ Python:Augment:
           --license 'Apache-2.0' \
           /tmp/application-sbom.cdx.json > /tmp/augmented_application-sbom.cdx.tmp
 
+    - |
         /tmp/sbomasm edit \
           --subject primary-component \
           --name phase1-python-application \
