@@ -29,6 +29,7 @@ Python:Generate:
           --output /tmp/container-sbom.cdx.json \
           phase-1-python
 
+    - |
         /tmp/trivy image \
           --format spdx-json \
           --pkg-types os \
