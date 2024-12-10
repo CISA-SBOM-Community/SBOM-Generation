@@ -21,6 +21,7 @@ Python:Generate:
     - docker build -t phase-1-python .
     - cd "phase_1/Python"
 
+    - |
         # Container SBOMs
         /tmp/trivy image \
           --format cyclonedx \
