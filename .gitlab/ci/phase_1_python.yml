@@ -8,12 +8,13 @@ variables:
   SBOM_SUPPLIER: "CISA Tiger Group for SBOM Generation Reference Implementations"
 
 
-Python:Generate:
+Python:Generate:Container:
   stage: "SBOM Generation"
   image: docker:latest
   services:
     - docker:dind
   before_script:
+    - apk add --no-cache curl tar
     - |
         curl -L -o trivy.tgz \
           "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
@@ -34,6 +35,22 @@ Python:Generate:
           --pkg-types os \
           --output phase_1/Python/container-sbom.spdx.json \
           phase-1-python
+  artifacts:
+    paths:
+      - phase_1/Python/container-sbom.*.json
+    when: always
+
+Python:Generate:Application:
+  stage: "SBOM Generation"
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache curl tar
+    - |
+        curl -L -o trivy.tgz \
+          "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
+        tar xvf trivy.tgz
+        chmod +x trivy
+  script:
     # Application SBOMs
     - |
         ./trivy fs \
@@ -47,13 +64,14 @@ Python:Generate:
           phase_1/Python/requirements.txt
   artifacts:
     paths:
-      - phase_1/Python/container-sbom.*.json
       - phase_1/Python/application-sbom.*.json
     when: always
 
 Python:Augment:
   stage: "SBOM Augmentation"
+  image: alpine:latest
   before_script:
+    - apk add --no-cache curl
     - |
         curl -L -o sbomasm \
           "https://github.com/interlynk-io/sbomasm/releases/download/v${SBOMASM_VERSION}/sbomasm-linux-amd64"
@@ -143,7 +161,7 @@ Python:Augment:
           --repository 'https://github.com/CISA-SBOM-Community/SBOM-Generation' \
           --license 'Apache-2.0' \
           phase_1/Python/augmented_application-sbom.spdx.tmp > phase_1/Python/augmented_application-sbom.spdx.json
-  needs: ["Python:Generate"]
+  needs: ["Python:Generate:Container", "Python:Generate:Application"]
   artifacts:
     paths:
       - phase_1/Python/augmented_*.json
@@ -151,7 +169,9 @@ Python:Augment:
 
 Python:Enrich:
   stage: "SBOM Enrichment"
+  image: alpine:latest
   before_script:
+    - apk add --no-cache curl tar
     - |
         curl -Ls https://github.com/snyk/parlay/releases/download/v${PARLAY_VERSION}/parlay_Linux_x86_64.tar.gz | \
           tar xvz
@@ -184,7 +204,9 @@ Python:Enrich:
 
 Python:Validate:
   stage: "SBOM Validation"
+  image: alpine:latest
   before_script:
+    - apk add --no-cache curl
     - |
         curl -L -o sbomqs \
           "https://github.com/interlynk-io/sbomqs/releases/download/v${SBOMQS_VERSION}/sbomqs-linux-amd64"
