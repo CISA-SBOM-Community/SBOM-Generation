@@ -6,7 +6,7 @@ on:
       - .github/workflows/phase_3_yocto.yml
 
 env:
-  YOCTO_TAG: styhead-5.1
+  YOCTO_TAG: styhead
   PARLAY_VERSION: 0.6.0
   SBOMASM_VERSION: 0.1.5
   SBOMQS_VERSION: 0.1.9
