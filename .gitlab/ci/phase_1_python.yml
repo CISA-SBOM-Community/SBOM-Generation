@@ -36,7 +36,8 @@ Python:Generate:
           --output /tmp/container-sbom.spdx.json \
           phase-1-python
 
-        # Application SBOMs
+    # Application SBOMs
+    - |
         /tmp/trivy fs \
           --format cyclonedx \
           --output /tmp/application-sbom.cdx.json \
