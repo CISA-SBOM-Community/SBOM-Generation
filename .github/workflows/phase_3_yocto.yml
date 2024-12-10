@@ -45,11 +45,11 @@ jobs:
   #         name: generated-kubectl-sbom-cyclonedx
   #         path: "/tmp/generated-kubectl-sbom.cdx.json"
   #
-  #     - name: Upload Generated SPDX SBOM
-  #       uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
-  #       with:
-  #         name: generated-kubectl-sbom-spdx
-  #         path: "/tmp/generated-kubectl-sbom.spdx.json"
+      - name: Upload Generated SPDX SBOM
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        with:
+          name: generated-kubectl-sbom-spdx
+          path: "poky/build/tmp/deploy/images/qemux86-64/core-image-minimal-qemux86-64.rootfs.spdx.json"
   # Augment:
   #   runs-on: ubuntu-latest
   #   needs: Generate
