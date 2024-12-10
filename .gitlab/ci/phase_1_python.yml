@@ -43,6 +43,7 @@ Python:Generate:
           --output /tmp/application-sbom.cdx.json \
           requirements.txt
 
+    - |
         /tmp/trivy fs \
           --format spdx-json \
           --output /tmp/application-sbom.spdx.json \
