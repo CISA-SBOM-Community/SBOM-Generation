@@ -169,6 +169,7 @@ Python:Enrich:
       /tmp/parlay ecosystems enrich \
         augmented_container-sbom.cdx.json > /tmp/enriched_container-sbom.cdx.json
 
+    - |
       /tmp/parlay ecosystems enrich \
         augmented_application-sbom.cdx.json > /tmp/enriched_application-sbom.cdx.json
 
