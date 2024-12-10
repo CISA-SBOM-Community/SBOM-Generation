@@ -20,32 +20,31 @@ Python:Generate:
         tar xvf trivy.tgz
         chmod +x trivy
   script:
-    - docker build -t phase-1-python .
-    - cd "phase_1/Python"
+    - docker build -t phase-1-python phase_1/Python
     # Container SBOMs
     - |
         ./trivy image \
           --format cyclonedx \
           --pkg-types os \
-          --output container-sbom.cdx.json \
+          --output phase_1/Python/container-sbom.cdx.json \
           phase-1-python
     - |
         ./trivy image \
           --format spdx-json \
           --pkg-types os \
-          --output container-sbom.spdx.json \
+          --output phase_1/Python/container-sbom.spdx.json \
           phase-1-python
     # Application SBOMs
     - |
         ./trivy fs \
           --format cyclonedx \
-          --output application-sbom.cdx.json \
-          requirements.txt
+          --output phase_1/Python/application-sbom.cdx.json \
+          phase_1/Python/requirements.txt
     - |
         ./trivy fs \
           --format spdx-json \
-          --output application-sbom.spdx.json \
-          requirements.txt
+          --output phase_1/Python/application-sbom.spdx.json \
+          phase_1/Python/requirements.txt
   artifacts:
     paths:
       - phase_1/Python/container-sbom.*.json
@@ -147,8 +146,7 @@ Python:Augment:
   needs: ["Python:Generate"]
   artifacts:
     paths:
-      - phase_1/Python/augmented_container-sbom.*.json
-      - phase_1/Python/augmented_application-sbom.*.json
+      - phase_1/Python/augmented_*.json
     when: always
 
 Python:Enrich:
