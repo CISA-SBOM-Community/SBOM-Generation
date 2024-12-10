@@ -18,10 +18,8 @@ Python:Generate:
         tar xvf /tmp/trivy.tgz -C /tmp
         chmod +x /tmp/trivy
   script:
-    - |
-        docker build -t phase-1-python .
-    - |
-        cd "phase_1/Python"
+    - docker build -t phase-1-python .
+    - cd "phase_1/Python"
 
         # Container SBOMs
         /tmp/trivy image \
