@@ -36,6 +36,7 @@ jobs:
           echo "INHERIT += \"rm_work\"" >> conf/local.conf
           echo "BB_HASHSERVE = \"auto\"" >> conf/site.conf
           echo "BB_HASHSERVE_UPSTREAM = \"wss://hashserv.yoctoproject.org/ws\"" >> conf/site.conf
+          echo "SPDX_PRETTY = "\1\"" >> conf/local.conf
           echo -e "SSTATE_MIRRORS = \" \\ \nfile://.* http://sstate.yoctoproject.org/all/PATH;downloadfilename=PATH \\\n \\ \nfile://.* http://sstate.yoctoproject.org/dev/PATH;downloadfilename=PATH \\\n \\ \n\"" >> conf/site.conf
           bitbake core-image-minimal
 
@@ -48,7 +49,7 @@ jobs:
       - name: Upload Generated SPDX SBOM
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
-          name: generated-kubectl-sbom-spdx
+          name: generated-yocto-sbom-spdx
           path: "poky/build/tmp/deploy/images/qemux86-64/core-image-minimal-qemux86-64.rootfs.spdx.json"
   # Augment:
   #   runs-on: ubuntu-latest
