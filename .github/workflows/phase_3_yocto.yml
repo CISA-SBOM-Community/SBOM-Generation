@@ -52,6 +52,10 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
 
+      - name: Save Augmented SBOMs
+        run: |
+          cp generated-yocto-sbom-spdx/core-image-minimal-qemux86-64.rootfs.spdx.json /tmp/augmented_yocto-sbom.spdx.json
+
       - name: Upload Augmented SPDX SBOM
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
@@ -70,7 +74,7 @@ jobs:
 
       - name: Save Final SBOMs
         run: |
-          cp /tmp/augmented_yocto-sbom.spdx.json /tmp/final_yocto-sbom.spdx.json
+          cp augmented-yocto-sbom-spdx/augmented_yocto-sbom.spdx.json /tmp/final_yocto-sbom.spdx.json
 
       - name: Upload Final SPDX SBOM
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
