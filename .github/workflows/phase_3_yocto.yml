@@ -1,0 +1,106 @@
+---
+name: Phase 3 - Yocto
+on:
+  push:
+    paths:
+      - .github/workflows/phase_3_yocto.yml
+
+env:
+  YOCTO_TAG: styhead-5.1.1
+  SBOMQS_VERSION: 0.1.9
+
+jobs:
+  Generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Environment
+        run: |
+          sudo apt update
+          sudo apt install -y gawk wget git diffstat unzip texinfo gcc build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 python3-subunit zstd liblz4-tool file locales libacl1
+          pip3 install websockets
+          sudo locale-gen en_US.UTF-8
+      - name: Checkout Yocto
+        run: |
+          git clone git://git.yoctoproject.org/poky
+          cd poky
+          git checkout ${YOCTO_TAG}
+      - name: Build Yocto
+        run: |
+          cd poky
+          source oe-init-build-env
+          echo "BB_NUMBER_THREADS=\"8\"" >> conf/local.conf
+          echo "PARALLEL_MAKE=\"-j 8\"" >> conf/local.conf
+          echo "INHERIT += \"rm_work\"" >> conf/local.conf
+          echo "BB_HASHSERVE = \"auto\"" >> conf/site.conf
+          echo "BB_HASHSERVE_UPSTREAM = \"wss://hashserv.yoctoproject.org/ws\"" >> conf/site.conf
+          echo "SPDX_PRETTY = \"1\"" >> conf/local.conf
+          echo -e "SSTATE_MIRRORS = \" \\ \nfile://.* http://sstate.yoctoproject.org/all/PATH;downloadfilename=PATH \\\n \\ \nfile://.* http://sstate.yoctoproject.org/dev/PATH;downloadfilename=PATH \\\n \\ \n\"" >> conf/site.conf
+          bitbake core-image-minimal
+
+      - name: Upload Generated SPDX SBOM
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        with:
+          name: generated-yocto-sbom-spdx
+          path: "poky/build/tmp/deploy/images/qemux86-64/core-image-minimal-qemux86-64.rootfs.spdx.json"
+  Augment:
+    runs-on: ubuntu-latest
+    needs: Generate
+    steps:
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+
+      - name: Save Augmented SBOMs
+        run: |
+          cp generated-yocto-sbom-spdx/core-image-minimal-qemux86-64.rootfs.spdx.json /tmp/augmented_yocto-sbom.spdx.json
+
+      - name: Upload Augmented SPDX SBOM
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        with:
+          name: augmented-yocto-sbom-spdx
+          path: "/tmp/augmented_yocto-sbom.spdx.json"
+
+  Enrich:
+    runs-on: ubuntu-latest
+    needs: Augment
+    steps:
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+
+      - name: Save Final SBOMs
+        run: |
+          cp augmented-yocto-sbom-spdx/augmented_yocto-sbom.spdx.json /tmp/final_yocto-sbom.spdx.json
+
+      - name: Upload Final SPDX SBOM
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        with:
+          name: final-yocto-sbom-spdx
+          path: "/tmp/final_yocto-sbom.spdx.json"
+
+  Validate:
+    needs: Enrich
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Download SBOMs
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+
+      - name: Install sbomqs
+        run: |
+          curl -L -o /tmp/sbomqs \
+            "https://github.com/interlynk-io/sbomqs/releases/download/v${SBOMQS_VERSION}/sbomqs-linux-amd64"
+          chmod +x /tmp/sbomqs
+
+      - name: "Display SBOM quality score through sbomqs"
+        run: |
+          echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
+          for SBOM in $(find . -iname final*.json); do
+            /tmp/sbomqs score "$SBOM" >> ${GITHUB_STEP_SUMMARY}
+          done
+          echo \`\`\` >> ${GITHUB_STEP_SUMMARY}
