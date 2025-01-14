@@ -1,6 +1,22 @@
 # SBOM Life Cycle
 
-![SBOM Life Cycle Diagram](https://raw.githubusercontent.com/CISA-SBOM-Community/SBOM-Generation/main/assets/lifecycle.svg)
+```mermaid
+---
+title: SBOM Producer Life Cycle
+---
+graph LR
+    %% Authoring subgraph
+    subgraph Authoring
+        Generation --> Augmentation
+        Augmentation --> Enrichment
+        Enrichment --> Validation
+        Validation --> Signing
+    end
+
+    %% Main flow
+    Signing --> Transportation
+    Transportation --> Analysis
+```
 
 # Authoring
 The authoring incorporates the steps required to generate an NTIA's [Minimum Elements](https://www.ntia.gov/sites/default/files/publications/sbom_minimum_elements_report_0.pdf) and/or [Framing Software Component Transparency: Establishing a Common Software Bill of Materials (SBOM)](https://docs.google.com/document/d/1uddfhPqflTOeYK7ZJjS4gGa8pspwez6mhJUjTrvu4J4/edit) (Third Edition). The life cycle is format-agnostic and is the same for both SPDX and CycloneDX (even though the tools may differ).
