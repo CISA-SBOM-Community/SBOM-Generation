@@ -95,7 +95,7 @@ jobs:
           #     of replacing the tool information.
           /tmp/sbomasm edit --append --subject Document \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
-              --supplier 'Habor by Cloud Native Computing Foundation (CNCF)(https://goharbor.io)' \
+              --supplier 'Harbor by Cloud Native Computing Foundation (CNCF)(https://goharbor.io)' \
               --repository 'https://github.com/goharbor/harbor.git' \
               --license 'Apache-2.0 (https://github.com/goharbor/harbor/blob/main/LICENSE)' \
               generated-harbor-sbom-spdx/generated-harbor-sbom.spdx.json > augmented_harbor-sbom.spdx.json
