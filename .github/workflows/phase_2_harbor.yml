@@ -121,7 +121,7 @@ jobs:
           # Augment the Generated CycloneDX with updated primary component information
           /tmp/sbomasm edit --subject primary-component \
               --author 'CISA Tiger Group for SBOM Generation Reference Implementations' \
-              --supplier 'Habor by Cloud Native Computing Foundation (CNCF)(https://goharbor.io)' \
+              --supplier 'Harbor by Cloud Native Computing Foundation (CNCF)(https://goharbor.io)' \
               --repository 'https://github.com/goharbor/harbor.git' \
               --license 'Apache-2.0 (https://github.com/goharbor/harbor/blob/main/LICENSE)' \
               augmented_harbor-sbom.cdx.json > /tmp/augmented_harbor-sbom.cdx.json
