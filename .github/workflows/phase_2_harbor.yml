@@ -6,7 +6,7 @@ on:
       - .github/workflows/phase_2_harbor.yml
 
 env:
-  HARBOR_TAG: 2.11.2
+  HARBOR_TAG: 2.12.1
   PARLAY_VERSION: 0.6.0
   SBOMASM_VERSION: 0.1.5
   SBOMQS_VERSION: 0.1.9
@@ -25,11 +25,9 @@ jobs:
 
       - name: Checkout Harbor
         run: |
-          git --version
-          git clone https://github.com/goharbor/harbor.git
-          pwd
-          cp -r harbor harbor-${HARBOR_TAG}
-          ls harbor-${HARBOR_TAG}
+          curl -L -o /tmp/harbor.tgz \
+            "https://github.com/goharbor/harbor/archive/refs/tags/v${HARBOR_TAG}.tar.gz"
+          tar xvf /tmp/harbor.tgz -C .
 
 
       - name: Generate SBOM with Trivy
