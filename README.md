@@ -20,6 +20,7 @@ All reference implementations follow a very similar flow and can easily be adapt
 - Keycloak (Java) - [Description](phase_1/keycloak/README.md) - [GitHub Workflow](.github/workflows/phase_1_keycloak.yml) - [GitLab Pipeline](https://gitlab.com/cisa-sbom-community/SBOM-Generation/-/blob/main/.gitlab/ci/phase_1_keycloak.yml?ref_type=heads)
 - Django Application (Python) - [GitHub Workflow](.github/workflows/phase_1_python.yml) - [GitLab Pipeline](https://gitlab.com/cisa-sbom-community/SBOM-Generation/-/blob/main/.gitlab/ci/phase_1_python.yml?ref_type=heads)
 - kubectl (Go) - [GitHub Workflow](.github/workflows/phase_2_kubectl.yml) - [GitLab Pipeline](https://gitlab.com/cisa-sbom-community/SBOM-Generation/-/blob/main/.gitlab/ci/phase_2_kubectl.yml?ref_type=heads)
+- Harbor (Go) - [GitHub Workflow](.github/workflows/phase_2_harbor.yml) - GitLab Pipeline 
 
 ## Meeting
 
