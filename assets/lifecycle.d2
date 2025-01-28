@@ -10,6 +10,7 @@ Authoring {
   Generation
   Augmentation
   Enrichment
+  Validation
   Signing
 }
 
@@ -23,5 +24,6 @@ Analysis {
 
 Authoring.Generation -> Authoring.Augmentation
 Authoring.Augmentation -> Authoring.Enrichment
-Authoring.Enrichment -> Authoring.Signing
+Authoring.Enrichment -> Authoring.Validation
+Authoring.Validation -> Authoring.Signing
 Authoring.Signing -> Transportation -> Analysis
