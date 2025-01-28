@@ -14,6 +14,10 @@ The generation step is where an SBOM is conceived. The level of "completeness" o
 
 You should ideally have an SBOM that captures all transient dependencies with hashes for all components (and sub-components).
 
+## Validation
+
+A minimum validation would be to ensure the resultant SBOM meets the format requirements for the standard. This can be done by running utilities or validating against schemas provided by the format standard community. Additional validation can include semantic validation, validating the SBOM meets the minimum requirements, and enhances SBOM quality.  
+
 ## Augmentation
 
 The augmentation phase is where we merge in data that cannot be automatically generated in the creation phase. This includes, but is not limited to, information such as:
