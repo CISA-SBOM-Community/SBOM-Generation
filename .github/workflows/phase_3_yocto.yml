@@ -38,7 +38,7 @@ jobs:
           bitbake core-image-minimal
 
       - name: Upload Generated SPDX SBOM
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
         with:
           name: generated-yocto-sbom-spdx
           path: "poky/build/tmp/deploy/images/qemux86-64/core-image-minimal-qemux86-64.rootfs.spdx.json"
@@ -57,7 +57,7 @@ jobs:
           cp generated-yocto-sbom-spdx/core-image-minimal-qemux86-64.rootfs.spdx.json /tmp/augmented_yocto-sbom.spdx.json
 
       - name: Upload Augmented SPDX SBOM
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
         with:
           name: augmented-yocto-sbom-spdx
           path: "/tmp/augmented_yocto-sbom.spdx.json"
@@ -77,7 +77,7 @@ jobs:
           cp augmented-yocto-sbom-spdx/augmented_yocto-sbom.spdx.json /tmp/final_yocto-sbom.spdx.json
 
       - name: Upload Final SPDX SBOM
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
         with:
           name: final-yocto-sbom-spdx
           path: "/tmp/final_yocto-sbom.spdx.json"
