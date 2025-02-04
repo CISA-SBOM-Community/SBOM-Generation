@@ -6,24 +6,22 @@ title: |md
 
 | {near: top-center}
 
-Authoring {
+Authoring: {
   Generation
   Augmentation
   Enrichment
   Validation
   Signing
+  Document Linking
 }
 
-Transportation {
+Transportation
 
-}
-
-Analysis {
-
-}
+Analysis
 
 Authoring.Generation -> Authoring.Augmentation
 Authoring.Augmentation -> Authoring.Enrichment
 Authoring.Enrichment -> Authoring.Validation
 Authoring.Validation -> Authoring.Signing
-Authoring.Signing -> Transportation -> Analysis
+Authoring.Signing -> Authoring."Document Linking"
+Authoring."Document Linking" -> Transportation -> Analysis
