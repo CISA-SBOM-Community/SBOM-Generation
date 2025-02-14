@@ -195,7 +195,7 @@ jobs:
           name: final-harbor-sbom-cyclonedx
           path: "/tmp/final_harbor-sbom.cdx.json"
 
-  Validate:
+  Verify:
     needs: Enrich
     runs-on: ubuntu-latest
     steps:

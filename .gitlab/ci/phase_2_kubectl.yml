@@ -125,8 +125,8 @@ Kubectl:Enrich:
     when: always
 
 
-Kubectl:Validate:
-  stage: "SBOM Validation"
+Kubectl:Verify:
+  stage: "SBOM Verification"
   before_script:
     - |
         curl -L -o /tmp/sbomqs \
