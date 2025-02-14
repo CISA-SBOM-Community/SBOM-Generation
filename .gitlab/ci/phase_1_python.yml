@@ -202,8 +202,8 @@ Python:Enrich:
       - phase_1/Python/final_*.json
     when: always
 
-Python:Validate:
-  stage: "SBOM Validation"
+Python:Verify:
+  stage: "SBOM Verification"
   image: alpine:latest
   before_script:
     - apk add --no-cache curl

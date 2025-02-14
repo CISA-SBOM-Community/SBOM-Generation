@@ -82,7 +82,7 @@ jobs:
           name: final-yocto-sbom-spdx
           path: "/tmp/final_yocto-sbom.spdx.json"
 
-  Validate:
+  Verify:
     needs: Enrich
     runs-on: ubuntu-latest
     steps:

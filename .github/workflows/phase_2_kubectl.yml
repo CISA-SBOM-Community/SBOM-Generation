@@ -180,7 +180,7 @@ jobs:
           name: final-kubectl-sbom-cyclonedx
           path: "/tmp/final_kubectl-sbom.cdx.json"
 
-  Validate:
+  Verify:
     needs: Enrich
     runs-on: ubuntu-latest
     steps:
