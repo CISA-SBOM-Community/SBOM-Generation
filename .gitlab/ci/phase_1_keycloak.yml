@@ -106,8 +106,8 @@ Keycloak:Enrich:
     when: always
 
 
-Keycloak:Validate:
-  stage: "SBOM Validation"
+Keycloak:Verify:
+  stage: "SBOM Verification"
   before_script:
     - |
         curl -L -o /tmp/sbomqs \

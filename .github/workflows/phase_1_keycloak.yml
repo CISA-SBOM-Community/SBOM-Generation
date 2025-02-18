@@ -180,7 +180,7 @@ jobs:
           name: final-keycloak-sbom-cyclonedx
           path: "/tmp/final_keycloak-sbom.cdx.json"
 
-  Validate:
+  Verify:
     needs: Enrich
     runs-on: ubuntu-latest
     steps:

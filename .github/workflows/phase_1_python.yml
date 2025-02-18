@@ -254,8 +254,8 @@ jobs:
           name: enriched-sboms
           path: "/tmp/enriched_*.json"
 
-  Validate:
-    name: "Validate SBOMs"
+  Verify:
+    name: "Verify SBOMs"
     needs: Enrich
     runs-on: ubuntu-latest
     steps:
