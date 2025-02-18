@@ -1,5 +1,11 @@
 # SBOM Generation Reference Implementations
 
+This repository was drafted in an open process by a community of [Software Bill of Materials](https://www.cisa.gov/sbom) experts, facilitated by the Cybersecurity and Infrastructure Security Agency (CISA). CISA did not draft and is not the author of this repository, _nor does this repository represent an official CISA and/or U.S. Government policy. CISA and the U.S. Government do not specifically adopt or endorse the views expressed in this document._
+
+Please read [SBOM Community Legal Explanation](https://www.cisa.gov/sites/default/files/2024-01/SBOM-Community-Legal-Explanation_508c.pdf) for additional details.
+
+To learn more about the community-led work to advance and refine SBOM that CISA facilitates, including how to join these open efforts, contact <SBOM@cisa.dhs.gov>.
+
 ## Why This Matters
 
 Creating high-quality Software Bills of Materials (SBOMs) is crucial for software transparency and security. However, the current landscape lacks a "golden path" for consistent SBOM generation. This project aims to bridge that gap by providing reference implementations that adhere to our [SBOM Lifecycle](https://github.com/CISA-SBOM-Community/SBOM-Generation/blob/main/SBOM_LIFECYCLE.md).
