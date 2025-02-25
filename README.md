@@ -28,16 +28,20 @@ All reference implementations follow a very similar flow and can easily be adapt
 - kubectl (Go) - [GitHub Workflow](.github/workflows/phase_2_kubectl.yml) - [GitLab Pipeline](https://gitlab.com/cisa-sbom-community/SBOM-Generation/-/blob/main/.gitlab/ci/phase_2_kubectl.yml?ref_type=heads)
 - Harbor (Go) - [GitHub Workflow](.github/workflows/phase_2_harbor.yml) - GitLab Pipeline 
 
+## White Paper
+
+This Tiger Team wrote a white paper to describe the process and results of the SBOM Generation Tiger Team. The draft version of the white paper is available [here](whitepaper/Draft-SBOM-Generation-White-Paper-Feb-25-2025.pdf).
+
 ## Meeting
 
 This Tiger Team meets weekly to further refine and improve working examples. Anyone is welcome to join!
 
-Tuesdays @ 10am Eastern / 7am Pacific
+~~Tuesdays @ 10am Eastern / 7am Pacific~~ The Tiger Team completed it objectives and is no longer regularly meeting.
 
-- [Teams Meeting Link](https://gov.teams.microsoft.us/l/meetup-join/19%3agcch%3ameeting_1fa6f7bb9186450fa64a2f0c0c497131%40thread.v2/0?context=%7b%22Tid%22%3a%22b18f006c-b0fc-467d-b23a-a35b5695b5dc%22%2c%22Oid%22%3a%226bb34de0-3fc5-496b-bf75-8faac6ae6e1a%22%7d)
+- [PAST - Teams Meeting Link](https://gov.teams.microsoft.us/l/meetup-join/19%3agcch%3ameeting_1fa6f7bb9186450fa64a2f0c0c497131%40thread.v2/0?context=%7b%22Tid%22%3a%22b18f006c-b0fc-467d-b23a-a35b5695b5dc%22%2c%22Oid%22%3a%226bb34de0-3fc5-496b-bf75-8faac6ae6e1a%22%7d)
 - [Meeting Notes](https://docs.google.com/document/d/1ZWDFWVd5XStE2iOX041Q-uB0VdHXUnIB0YyAnIRSs5s/edit)
 
-## Contribution
+## Contributions
 
 We welcome contributions from anyone in the community, especially individuals with:
 
