@@ -50,13 +50,13 @@ jobs:
             keycloak-${KEYCLOAK_TAG}
 
       - name: Upload Generated CycloneDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: generated-keycloak-sbom-cyclonedx
           path: "/tmp/generated-keycloak-sbom.cdx.json"
 
       - name: Upload Generated SPDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: generated-keycloak-sbom-spdx
           path: "/tmp/generated-keycloak-sbom.spdx.json"
@@ -115,13 +115,13 @@ jobs:
               augmented_keycloak-sbom.cdx.json > /tmp/augmented_keycloak-sbom.cdx.json
 
       - name: Upload Augmented SPDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: augmented-keycloak-sbom-spdx
           path: "/tmp/augmented_keycloak-sbom.spdx.json"
 
       - name: Upload Augmented CycloneDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: augmented-keycloak-sbom-cyclonedx
           path: "/tmp/augmented_keycloak-sbom.cdx.json"
@@ -152,13 +152,13 @@ jobs:
             augmented-keycloak-sbom-spdx/augmented_keycloak-sbom.spdx.json > /tmp/enriched_keycloak-sbom.spdx.json
 
       - name: Upload Enriched SPDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: enriched-keycloak-sbom-spdx
           path: "/tmp/enriched_keycloak-sbom.spdx.json"
 
       - name: Upload Enriched CycloneDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: enriched-keycloak-sbom-cyclonedx
           path: "/tmp/enriched_keycloak-sbom.cdx.json"
@@ -169,13 +169,13 @@ jobs:
           cp /tmp/enriched_keycloak-sbom.cdx.json /tmp/final_keycloak-sbom.cdx.json
 
       - name: Upload Final SPDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: final-keycloak-sbom-spdx
           path: "/tmp/final_keycloak-sbom.spdx.json"
 
       - name: Upload Final CycloneDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: final-keycloak-sbom-cyclonedx
           path: "/tmp/final_keycloak-sbom.cdx.json"

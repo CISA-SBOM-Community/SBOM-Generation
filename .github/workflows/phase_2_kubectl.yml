@@ -50,13 +50,13 @@ jobs:
             kubectl-${KUBECTL_TAG}
 
       - name: Upload Generated CycloneDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: generated-kubectl-sbom-cyclonedx
           path: "/tmp/generated-kubectl-sbom.cdx.json"
 
       - name: Upload Generated SPDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: generated-kubectl-sbom-spdx
           path: "/tmp/generated-kubectl-sbom.spdx.json"
@@ -115,13 +115,13 @@ jobs:
               augmented_kubectl-sbom.cdx.json > /tmp/augmented_kubectl-sbom.cdx.json
 
       - name: Upload Augmented SPDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: augmented-kubectl-sbom-spdx
           path: "/tmp/augmented_kubectl-sbom.spdx.json"
 
       - name: Upload Augmented CycloneDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: augmented-kubectl-sbom-cyclonedx
           path: "/tmp/augmented_kubectl-sbom.cdx.json"
@@ -152,13 +152,13 @@ jobs:
             augmented-kubectl-sbom-spdx/augmented_kubectl-sbom.spdx.json > /tmp/enriched_kubectl-sbom.spdx.json
 
       - name: Upload Enriched SPDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: enriched-kubectl-sbom-spdx
           path: "/tmp/enriched_kubectl-sbom.spdx.json"
 
       - name: Upload Enriched CycloneDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: enriched-kubectl-sbom-cyclonedx
           path: "/tmp/enriched_kubectl-sbom.cdx.json"
@@ -169,13 +169,13 @@ jobs:
           cp /tmp/enriched_kubectl-sbom.cdx.json /tmp/final_kubectl-sbom.cdx.json
 
       - name: Upload Final SPDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: final-kubectl-sbom-spdx
           path: "/tmp/final_kubectl-sbom.spdx.json"
 
       - name: Upload Final CycloneDX SBOM
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4
         with:
           name: final-kubectl-sbom-cyclonedx
           path: "/tmp/final_kubectl-sbom.cdx.json"
